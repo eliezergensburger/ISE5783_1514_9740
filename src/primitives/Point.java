@@ -1,6 +1,6 @@
 package primitives;
 
-import java.lang.Math;
+import static java.lang.Math.sqrt;
 
 /**
  * This class represents a point in space.
@@ -14,10 +14,10 @@ public class Point {
      * Constructs a Point object with the specified x, y, and z coordinates.
      * @param coordinate a Double3 value representing the coordinates of the point.
      */
-    public Point(Double3 coordinate) {
+    Point(Double3 coordinate) {
         this.coordinate = coordinate;
     }
-    Point(double x, double y, double z) {
+    public Point(double x, double y, double z) {
         this.coordinate = new Double3(x,y,z);
     }
 
@@ -29,10 +29,9 @@ public class Point {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true; // ?יכול להיות שזה מיותר
-        if (o == null || getClass() != o.getClass()) return false;
-        Point point = (Point) o;
-        return this.coordinate.equals(point);
+        if (this == o) return true;
+        return (o instanceof Point other)
+                && this.coordinate.equals(other.coordinate);
     }
 
     /**
@@ -69,6 +68,6 @@ public class Point {
      * @return the distance between the points.
      */
     public double distance(Point p) {
-        return java.lang.Math.sqrt(this.distanceSquared(p));
+        return sqrt(this.distanceSquared(p));
     }
 }
