@@ -1,4 +1,4 @@
-package Geometries;
+package geometries;
 
 import primitives.Point;
 import primitives.Vector;
@@ -18,7 +18,9 @@ public class Plane implements Geometry {
     public Plane(Point p1, Point p2, Point p3)
     {
         p0 = p1;
-        normal = null;
+        Vector v1 = p2.subtract(p1) ; // two new vectors
+        Vector v2 =p3.subtract(p2) ; // two new vectors ;
+        normal = v1.crossProduct(v2).normalize();
     }
 
     /**
@@ -40,7 +42,7 @@ public class Plane implements Geometry {
      */
     @Override
     public Vector getNormal(Point p) {
-        return null;
+        return normal;
     }
 
     /**
@@ -49,6 +51,6 @@ public class Plane implements Geometry {
      * @return A Vector object representing the normal vector to the surface of the plane.
      */
     public Vector getNormal() {
-        return null;
+        return normal;
     }
 }

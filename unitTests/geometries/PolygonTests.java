@@ -1,15 +1,9 @@
-package Geometries;
-
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
-import static primitives.Util.isZero;
-
+package geometries;
 import org.junit.jupiter.api.Test;
 
-import geometries.Polygon;
+import static org.junit.jupiter.api.Assertions.*;
+import static primitives.Util.isZero;
+
 import primitives.Point;
 import primitives.Vector;
 
