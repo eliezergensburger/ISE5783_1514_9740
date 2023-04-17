@@ -3,6 +3,7 @@ package geometries;
 import primitives.Point;
 import primitives.Vector;
 
+
 public class Sphere extends RadialGeometry{
 
     final private Point center; // The center point of the sphere
