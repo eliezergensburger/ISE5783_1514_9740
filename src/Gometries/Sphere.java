@@ -21,7 +21,7 @@ public class Sphere extends RadialGeometry{
     /**
      * Returns the normal vector to the surface of the sphere at the given point.
      *
-     * @param p The Point object representing the point on the surface.
+     * @param point The Point object representing the point on the surface.
      * @return A Vector object representing the normal vector to the surface at the given point.
      */
     @Override
