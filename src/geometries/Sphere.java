@@ -3,7 +3,6 @@ package geometries;
 import primitives.Point;
 import primitives.Vector;
 
-
 public class Sphere extends RadialGeometry{
 
     final private Point center; // The center point of the sphere
@@ -26,7 +25,7 @@ public class Sphere extends RadialGeometry{
      * @return A Vector object representing the normal vector to the surface at the given point.
      */
     @Override
-    public Vector getNormal(Point p) {
-        return null;
+    public Vector getNormal(Point point) {
+        return point.subtract(center).normalize();
     }
 }
