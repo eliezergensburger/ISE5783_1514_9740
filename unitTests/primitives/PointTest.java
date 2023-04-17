@@ -1,12 +1,16 @@
 package primitives;
 
 import org.junit.jupiter.api.Test;
-
-
 import static org.junit.jupiter.api.Assertions.*;
 
+/**
+ * This class is responsible for testing the functionality of the Point class.
+ */
 class PointTest {
 
+    /**
+     * Tests the equals method of the Point class.
+     */
     @Test
     void testEquals() {
         Point p1 = new Point(1.0, 2.0, 3.0);
@@ -16,11 +20,11 @@ class PointTest {
         assertFalse(p1.equals(p3), "equals method is incorrect");
     }
 
+    /**
+     * Tests the add method of the Point class.
+     */
     @Test
     void testAdd() {
-        assertThrows(IllegalArgumentException.class,
-                () -> new Point(-1,-1,-1).subtract(new Point(1,1,1)),
-                "ERROR: Vector + -itself does not throw an exception");
         Point p1 = new Point(1, 2, 3);
         assertEquals(
                 new Point(0, 0, 0),
@@ -28,6 +32,9 @@ class PointTest {
                 "ERROR: Point + Vector does not work correctly");
     }
 
+    /**
+     * Tests the subtract method of the Point class.
+     */
     @Test
     void testSubtract() {
         assertThrows(IllegalArgumentException.class,
@@ -39,6 +46,9 @@ class PointTest {
         assertEquals(new Vector(1.0, 1.0, 1.0), v, "ERROR: Point - Point does not work correctly");
     }
 
+    /**
+     * Tests the distanceSquared method of the Point class.
+     */
     @Test
     void testDistanceSquared() {
         Point p1 = new Point(1.0, 2.0, 3.0);
@@ -49,6 +59,9 @@ class PointTest {
                 "ERROR: Squared distance between two Points is incorrect");
     }
 
+    /**
+     * Tests the distance method of the Point class.
+     */
     @Test
     void testDistance() {
         Point p1 = new Point(1.0, 2.0, 3.0);
