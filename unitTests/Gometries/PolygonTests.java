@@ -1,4 +1,4 @@
-package Geometries;
+package geometries;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -17,7 +17,7 @@ import primitives.Vector;
  * @author Dan */
 public class PolygonTests {
 
-   /** Test method for {@link Gometries.Polygon#Polygon(primitives.Point...)}. */
+   /** Test method for {@link geometries.Polygon#Polygon(primitives.Point...)}. */
    @Test
    public void testConstructor() {
       // ============ Equivalence Partitions Tests ==============
@@ -65,7 +65,7 @@ public class PolygonTests {
 
    }
 
-   /** Test method for {@link Gometries.Polygon#getNormal(primitives.Point)}. */
+   /** Test method for {@link geometries.Polygon#getNormal(primitives.Point)}. */
    @Test
    public void testGetNormal() {
       // ============ Equivalence Partitions Tests ==============

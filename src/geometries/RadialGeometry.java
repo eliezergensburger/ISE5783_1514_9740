@@ -1,6 +1,6 @@
-package Gometries;
+package geometries;
 
-public abstract class RadialGeometry implements Geometries.Geometry {
+public abstract class RadialGeometry implements geometries.Geometry {
     final protected double radius;
 
     /**
