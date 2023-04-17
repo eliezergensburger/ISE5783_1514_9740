@@ -26,7 +26,8 @@ public class Tube extends RadialGeometry {
      * @return A Vector object representing the normal vector to the surface at the given point.
      */
     @Override
-    public Vector getNormal(Point point) { //by the formulla in the slides
+    public Vector getNormal(Point point) {
+        //by the formulla in the slides
         double t = axisRay.getDir().dotProduct(
                 point.subtract(
                         axisRay.getP0()));

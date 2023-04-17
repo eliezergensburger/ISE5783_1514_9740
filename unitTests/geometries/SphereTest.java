@@ -7,26 +7,6 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class SphereTest {
     /**
-     * Test method for {@link geometries.Polygon#Polygon(primitives.Point...)}.
-     */
-    @Test
-    public void testConstructor() {
-        // ============ Equivalence Partitions Tests ==============
-
-        // TC01: Correct concave quadrangular with vertices in correct order
-        try {
-            new Sphere(1, new Point(0,0,0) );
-        } catch (IllegalArgumentException e) {
-            fail("Failed constructing a correct sphere");
-        }
-
-
-        // =============== Boundary Values Tests ==================
-
-
-    }
-
-    /**
      * Test method for {@link geometries.Polygon#getNormal(primitives.Point)}.
      */
     @Test

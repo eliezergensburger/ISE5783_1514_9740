@@ -9,36 +9,21 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class TubeTest {
     /**
-     * Test method for {@link geometries.Polygon#Polygon(primitives.Point...)}.
-     */
-    @Test
-    public void testConstructor() {
-        // ============ Equivalence Partitions Tests ==============
-
-        // TC01: Correct concave quadrangular with vertices in correct order
-        try {
-            new Tube (3.0, new Ray(new Point(0,0,0),new Vector(1,0,0)));
-
-        } catch (IllegalArgumentException e) {
-            fail("Failed constructing a correct Tube");
-        }
-
-
-
-        // =============== Boundary Values Tests ==================
-
-
-    }
-
-    /**
      * Test method for {@link geometries.Tube#getNormal(primitives.Point)}.
      */
     @Test
-    public void testGetNormal() {
+    void testGetNormal() {
+        Tube tu = new Tube(1 ,new Ray(new Point(0, 0, 0), new Vector(1, 0, 0)));
+
         // ============ Equivalence Partitions Tests ==============
-        // TC01: There is a simple single test here
-        Polygon pl = new Polygon(new Point(0, 0, 1), new Point(1, 0, 0), new Point(0, 1, 0), new Point(-1, 1, 1));
-        double sqrt3 = Math.sqrt(1d / 3);
-        assertEquals(new Vector(sqrt3, sqrt3, sqrt3), pl.getNormal(new Point(0, 0, 1)), "Bad normal to Tube"); //checks for point on the tube
+        // TC01: tests for calculation of normal to the tu
+        assertEquals(new Vector(0, 0, 1),
+                tu.getNormal(new Point(1, 0, 1)),
+                "ERROR: The calculation of normal to the tu is not calculated correctly");
+
+        // =============== Boundary Values Tests ==================
+        // TC02: Test when the point is orthogonal to the ray's head goes to the ZERO vector
+        assertThrows(IllegalArgumentException.class, () -> tu.getNormal(new Point(0, 0, 1)),
+                "ZERO vector is not allowed");
     }
 }
