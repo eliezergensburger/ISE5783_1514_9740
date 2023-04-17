@@ -1,4 +1,4 @@
-package geometries;
+package Geometries;
 
 import static primitives.Util.isZero;
 

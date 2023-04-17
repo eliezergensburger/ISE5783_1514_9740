@@ -1,4 +1,4 @@
-package geometries;
+package Geometries;
 
 import primitives.Point;
 import primitives.Vector;
@@ -26,7 +26,7 @@ public class Sphere extends RadialGeometry{
      * @return A Vector object representing the normal vector to the surface at the given point.
      */
     @Override
-    public Vector getNormal(Point point) {
-        return point.subtract(center).normalize();
+    public Vector getNormal(Point p) {
+        return null;
     }
 }
