@@ -22,20 +22,33 @@ public class Cylinder extends Tube{
     }
     @Override
     public Vector getNormal(Point point) {
-        // checks if it in the bases center to avoid zero vector
-        if( point.equals(axisRay.getP0() ) ||
-                point.equals(axisRay.getP0().add(this.axisRay.getDir().scale(height)) ) ){
-            return  this.axisRay.getDir() ;
+
+        // define the center of cylinder's sides
+        Vector cylinderCenterVector = axisRay.getDir();
+
+        Point centerOfOneSide = axisRay.getP0();
+        Point centerOfSecondSide = axisRay.getP0().add(axisRay.getDir().scale(height));
+
+        //The normal at a base will be simply equal to central ray's
+        //direction vector 𝑣 or opposite to it (−𝑣) so we check it
+        if (point.equals(centerOfOneSide)) {
+            return cylinderCenterVector.scale(-1);
         }
-        // checks if it is in the bases and if it is it returbns axsix dir and if it not calc like tube
-        double radiusSquared = this.radius * this.radius;
-        Vector toOtherBase = this.axisRay.getDir().scale(this.height) ;
-        Point p0Ver2 = this.axisRay.getP0().add(toOtherBase);
-        double crossProductp01 =  this.axisRay.getDir().dotProduct(this.axisRay.getP0().subtract(point));
-        double crossProductp02 =   this.axisRay.getDir().dotProduct(p0Ver2.subtract(point));
-        return  (point.distanceSquared(this.axisRay.getP0()) <= radiusSquared  && crossProductp01  == 0) ||
-                (point.distanceSquared(p0Ver2) <= radiusSquared && crossProductp02 == 0) ?
-                this.axisRay.getDir() :
-                super.getNormal(point) ;
+        else if (point.equals(centerOfSecondSide)){
+            return cylinderCenterVector;
+        }
+
+        //If the point on one of the cylinder's bases, but it's not the center point
+        double projection = cylinderCenterVector.dotProduct(point.subtract(centerOfOneSide));
+        if (projection == 0) {
+            Vector v1 = point.subtract(centerOfOneSide);
+            return v1.normalize();
+        }
+
+        //If the point on the side of the cylinder.
+        Point center = centerOfOneSide.add(cylinderCenterVector.scale(projection));
+        Vector v = point.subtract(center);
+
+        return v.normalize();
     }
 }
