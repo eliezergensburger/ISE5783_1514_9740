@@ -7,6 +7,10 @@ import static java.lang.Math.sqrt;
  */
 public class Point {
 
+    public Double3 getCoordinate() {
+        return coordinate;
+    }
+
     /** The coordinate */
     final Double3 coordinate;
 
