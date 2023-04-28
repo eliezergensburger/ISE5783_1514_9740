@@ -4,7 +4,9 @@ import static java.lang.System.out;
 import static primitives.Util.isZero;
 
 import primitives.Point;
+import primitives.Ray;
 import primitives.Vector;
+import geometries.*;
 
 /** Test program for the 1st stage
  * @author Dan Zilberstein */
@@ -13,6 +15,9 @@ public final class Main {
     /** Main program to tests initial functionality of the 1st stage
      * @param args irrelevant here */
     public static void main(String[] args) {
+        Sphere j = new Sphere(1, new Point(1, 0, 0) );
+        out.println(j.findIntersections(new Ray(new Point(2, 0, 0),
+                new Vector(1, 1, 0))));
 
         try { // test zero vector
             new Vector(0, 0, 0);
