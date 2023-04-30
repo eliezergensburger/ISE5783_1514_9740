@@ -34,7 +34,7 @@ class SphereTest {
                 new Vector(4, 5, 0)));
         assertNull(result, "Ray dosn't cross sphere");
 // TC02: Ray starts before and crosses the sphere (2 points)
-        Point p1 = new Point(0.0651530771650466, 0.355051025721682, 0);
+        Point p1 = new Point(-2.47688, 0.912116, 0);
         Point p2 = new Point(1.53484692283495, 0.844948974278318, 0);
         result = sphere.findIntersections(new Ray(new Point(-1, 0, 0),
                 new Vector(3, 1, 0)));
@@ -58,7 +58,7 @@ class SphereTest {
 
 // =============== Boundary Values Tests ==================
 // **** Group: Ray's line crosses the sphere (but not the center)
-// TC11: Ray starts at sphere and goes inside (1 points)
+// TC11: Ray starts at sphere and goes inside (1 point)
         assertEquals(
                 List.of(
                         new Point(2, 0, 0)),
