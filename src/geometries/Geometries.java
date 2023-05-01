@@ -29,14 +29,22 @@ public class Geometries implements Intersectable {
     @Override
     public List<Point> findIntersections(Ray ray) {
 
-        List<Point> it = new LinkedList<>();
+        Boolean flag = false;
         for(Intersectable element : this.items){
-            List<Point> x =element.findIntersections(ray);
-            if(x!= null ){
-                it.addAll(x);
+            if(element.findIntersections(ray) != null){
+                flag = true;
             }
-
         }
-        return it.size() == 0 ? null :  it ;
+        if(!flag)
+            return null;
+
+        List<Point> it = new LinkedList<>();
+        for(Intersectable element : this.items) {
+            List<Point> x = element.findIntersections(ray);
+            if (x != null)
+                it.addAll(x);
+        }
+
+        return it ;
     }
 }
