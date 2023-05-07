@@ -1,17 +1,17 @@
 package geometries;
 
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static primitives.Util.isZero;
 
 import org.junit.jupiter.api.Test;
 
 
 import primitives.Point;
+import primitives.Ray;
 import primitives.Vector;
+
+import java.util.List;
 
 /** Testing Polygons
  * @author Dan */
@@ -83,5 +83,41 @@ public class PolygonTests {
       for (int i = 0; i < 3; ++i)
          assertTrue(isZero(result.dotProduct(pts[i].subtract(pts[i == 0 ? 3 : i - 1]))),
                     "Polygon's normal is not orthogonal to one of the edges");
+   }
+
+   @Test
+   void findIntersections() {
+      Polygon triangle = new Polygon(
+              new Point(2, 0, 0),
+              new Point(0, 3, 0),
+              new Point(0, 0, 0));
+      // ============ Equivalence Partitions Tests ==============
+      //TC01: Inside polygon/triangle(1 Point)
+
+      Ray ray = new Ray(new Point(0, 0, -1), new Vector(1, 1, 1));
+      List<Point> result = triangle.findIntersections(ray);
+      Point p1 = new Point(1, 1, 0);
+      assertEquals(List.of(p1), result, "Inside polygon/triangle(1 Point)");
+
+      //TC02: Outside against edge(0 Points)
+      ray = new Ray(new Point(0, 0, -1), new Vector(2, 1, 1));
+      assertNull(triangle.findIntersections(ray), "Outside against edge");
+
+      //TC03: Outside the triangle opposite the vertex(0 Points)
+      ray = new Ray(new Point(3, -2, -1), new Vector(1, 1, 1));
+      assertNull(triangle.findIntersections(ray), "Opposite the vertex");
+
+      // =============== Boundary Values Tests ==================
+      // TC11: On the rib(0 Points)
+      ray = new Ray(new Point(0, -1, -1), new Vector(1, 1, 1));
+      assertNull(triangle.findIntersections(ray), "On the rib");
+
+      // TC12: On the vertex(0 Points)
+      ray = new Ray(new Point(1, -1, -1), new Vector(1, 1, 1));
+      assertNull(triangle.findIntersections(ray), "On the vertex");
+
+      // TC13: On the continuation of the rib(0 Points)
+      ray = new Ray(new Point(3, -4, -1), new Vector(1, 1, 1));
+      assertNull(triangle.findIntersections(ray), "On the continuation of the rib");
    }
 }
