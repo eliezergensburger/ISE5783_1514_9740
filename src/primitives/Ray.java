@@ -1,5 +1,5 @@
 package primitives;
-import java.util.Objects;
+import java.util.List;
 
 import static primitives.Util.isZero;
 
@@ -55,5 +55,30 @@ public class Ray {
             throw new IllegalArgumentException("t equal 0 cause illegal Vector ZERO");
 
         return p0.add(dir.scale(t));
+    }
+
+    /**
+     * Given a list of points, find the closest point to the origin
+     *
+     * @param points a list of points
+     * @return the closest point to the origin
+     */
+    public Point findClosestPoint(List<Point> points) {
+        if (points == null)
+            return null;
+
+        Point result = null;
+        double closest = Double.MAX_VALUE;
+        double ptDistance;
+
+        for (Point pt : points) {
+            ptDistance = pt.distance(this.p0);
+            if (ptDistance < closest) {
+                closest = ptDistance;
+                result = pt;
+            }
+        }
+
+        return result;
     }
 }

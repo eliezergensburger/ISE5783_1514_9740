@@ -13,6 +13,7 @@ public class Point {
 
     /** The coordinate */
     final Double3 coordinate;
+    public static Point ZERO = new Point(Double3.ZERO);
 
     /**
      * Constructs a Point object with the specified x, y, and z coordinates.
