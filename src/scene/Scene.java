@@ -11,10 +11,10 @@ import primitives.Color;
  */
 public class Scene {
 
-    private final String name;
-    private final Color background;
-    private final AmbientLight ambientLight;
-    private final Geometries geometries;
+    public final String name;
+    public final Color background;
+    public final AmbientLight ambientLight;
+    public final Geometries geometries;
 
     /**
      * @param builder - The builder of Scene

@@ -1,115 +1,232 @@
 package renderer;
 
-import primitives.*;
+
+import primitives.Color;
+import primitives.Point;
+import primitives.Ray;
+import primitives.Vector;
+
+import java.util.MissingResourceException;
+
+import static primitives.Util.isZero;
 
 /**
- * This class represents a camera in a 3D scene.
+ * This class represented a camera
+ *
+ * @author Amiad Korman & Omer Dayan
  */
 public class Camera {
-    private Point location;
+
     private Vector vRight;
-    private Vector vUp;
     private Vector vTo;
-    private double height;
-    private double width;
+    private Vector vUp;
+    private Point p0;
+
     private double distance;
+    private int width;
+    private int height;
+
+    private ImageWriter imageWriter;
+    private RayTracerBase rayTracer;
+
+    private static final String RESOURCE_ERROR = "Renderer resource not set";
+    private static final String RENDER_CLASS = "Render";
+    private static final String IMAGE_WRITER_COMPONENT = "Image writer";
+    private static final String RAY_TRACER_COMPONENT = "Ray tracer";
 
     /**
-     * Creates a new Camera object with the given location, direction of view, and up vector.
+     * This is the constructor of the camera class. It takes 3 vectors as parameters and checks if they are orthogonal.
+     * If they are not, it throws an exception.
      *
-     * @param location the camera's location
-     * @param vTo the camera's direction of view
-     * @param vUp the camera's up vector
-     * @throws IllegalArgumentException if the given vTo and vUp vectors are not orthogonal
+     * @param p0  The point that the camera spot in
+     * @param vTo The direction of the camera
+     * @param vUp The direction of the camera
      */
-    public Camera(Point location, Vector vTo, Vector vUp) throws IllegalArgumentException {
-        if (vUp.dotProduct(vTo) != 0) {
-            throw new IllegalArgumentException("The vectors are not orthogonal");
+    public Camera(Point p0, Vector vTo, Vector vUp) {
+        if (!isZero(vTo.dotProduct(vUp))) {
+            throw new IllegalArgumentException("vUp and vTo aren't orthogonal");
         }
-        this.location = location;
+        this.p0 = p0;
         this.vTo = vTo.normalize();
         this.vUp = vUp.normalize();
-        vRight = vTo.crossProduct(vUp).normalize();
+        this.vRight = this.vTo.crossProduct(this.vUp);
     }
 
     /**
-     * Gets the height of the viewport.
+     * Getter for the distance field of Camera
      *
-     * @return the height of the viewport
-     */
-    public double getHeight() {
-        return height;
-    }
-
-    /**
-     * Gets the width of the viewport.
-     *
-     * @return the width of the viewport
-     */
-    public double getWidth() {
-        return width;
-    }
-
-    /**
-     * Gets the distance of the viewport from the camera.
-     *
-     * @return the distance of the viewport from the camera
+     * @return The distance between the camera and the viewPlane.
      */
     public double getDistance() {
-        return distance;
+        return this.distance;
     }
 
     /**
-     * Sets the size of the viewport.
+     * Getter for the width field of Camera.
      *
-     * @param width the width of the viewport
-     * @param height the height of the viewport
-     * @return this camera object
-     * @throws IllegalArgumentException if width or height are not positive
+     * @return The width of the camera.
      */
-    public Camera setVPSize(double width, double height) throws IllegalArgumentException {
-        if (width <= 0 || height <= 0)
-            throw new IllegalArgumentException("Width and height must be bigger than 0");
-        this.height = height;
-        this.width = width;
-        return this;
+    public int getWidth() {
+        return this.width;
     }
 
     /**
-     * Sets the distance of the viewport from the camera.
+     * Getter for the height field of Camera.
      *
-     * @param distance the distance of the viewport from the camera
-     * @return this camera object
-     * @throws IllegalArgumentException if distance is not positive
+     * @return The height of the camera.
      */
-    public Camera setVPDistance(double distance) throws IllegalArgumentException {
-        if (distance <= 0)
-            throw new IllegalArgumentException("distance must be bigger than 0");
+    public int getHeight() {
+        return this.height;
+    }
+
+    /**
+     * Sets the distance between the camera and the viewPlane.
+     *
+     * @param distance The distance from the camera to the view plane.
+     * @return The camera object itself.
+     */
+    public Camera setVPDistance(double distance) {
         this.distance = distance;
         return this;
     }
 
     /**
-     * Constructs a ray that passes through the given pixel coordinates in the viewport.
+     * Set the viewPlane size to the given width and height.
      *
-     * @param nX the number of pixels along the viewport's width
-     * @param nY the number of pixels along the viewport's height
-     * @param j the column index of the pixel
-     * @param i the row index of the pixel
-     * @return a ray passing through the given pixel coordinates in the viewport
+     * @param width  The width of the viewPlane.
+     * @param height The height of the viewPlane.
+     * @return The camera object itself.
      */
-    public Ray constructRay(int nX, int nY, int j, int i){
-        double Rx = height/nY;
-        double Ry = width/nX;
+    public Camera setVPSize(int width, int height) {
+        this.width = width;
+        this.height = height;
+        return this;
+    }
 
-        double yi = -(i - (nY - 1) / 2.0) * Ry;
-        double xj = (j - (nX - 1) / 2.0) * Rx;
+    /**
+     * This function sets the image writer of the camera and returns the camera.
+     *
+     * @param imageWriter The ImageWriter object that will be used to write the image to a file.
+     * @return The camera itself.
+     */
+    public Camera setImageWriter(ImageWriter imageWriter) {
+        this.imageWriter = imageWriter;
+        return this;
+    }
 
-        Point PCenter = location.add(vTo.scale(distance));
-        Point pIJ = PCenter;
-        if(xj != 0) pIJ = pIJ.add(vRight.scale(xj));
-        if (yi != 0) pIJ = pIJ.add(vUp.scale(yi));
-        Ray result = new Ray(location, pIJ.subtract(location));
-        return result;
+    /**
+     * This function sets the ray tracer for this camera.
+     *
+     * @param rayTracer The ray tracer to use.
+     * @return The camera object itself.
+     */
+    public Camera setRayTracer(RayTracerBase rayTracer) {
+        this.rayTracer = rayTracer;
+        return this;
+    }
+
+    /**
+     * Construct a ray through the pixel [i,j] on the view plane,
+     * when the view plane is divided into nX by nY rectangular cells
+     *
+     * @param nX number of pixels in the columns
+     * @param nY number of pixels in the rows
+     * @param j  column index of the pixel
+     * @param i  the row index of the pixel
+     * @return A ray from the camera to the pixel.
+     */
+    public Ray constructRay(int nX, int nY, int j, int i) {
+        // Ratio (pixel width & height)
+        double rY = (double) this.height / nY;
+        double rX = (double) this.height / nX;
+
+        // Image center
+        Point Pc = this.p0.add(this.vTo.scale(this.distance));
+
+        // Pixel[i,j] center
+        Point Pij = Pc;
+
+        double yI = -(i - ((nY - 1) / 2d)) * rY;
+        double xJ = (j - ((nX - 1) / 2d)) * rX;
+
+        // move to middle of pixel i,j
+        if (!isZero(xJ))
+            Pij = Pij.add(this.vRight.scale(xJ));
+        if (!isZero(yI))
+            Pij = Pij.add(this.vUp.scale(yI));
+
+        // return ray from camera to viewPlane coordinate (i, j)
+        return new Ray(this.p0, Pij.subtract(this.p0));
+    }
+
+    /**
+     * This function constructs a ray from the camera through the pixel at (nX, nY) and then traces that ray through the
+     * scene to determine the color of the pixel
+     *
+     * @param nX  the x coordinate of the pixel on the screen
+     * @param nY  the y-coordinate of the pixel in the image
+     * @param col the column of the pixel
+     * @param row the row of the pixel in the image
+     * @return The color of the pixel.
+     */
+    private Color castRay(int nX, int nY, int col, int row) {
+        Ray ray = constructRay(nX, nY, col, row);
+        Color pixelColor = this.rayTracer.traceRay(ray);
+        return pixelColor;
+    }
+
+    /**
+     * > The function iterates over all the pixels in the image and casts a ray through each pixel
+     */
+    public void renderImage() {
+        // Checks that imageWriter and rayTracer fields isn't empty
+        if (this.imageWriter == null)
+            throw new MissingResourceException(RESOURCE_ERROR, RENDER_CLASS, IMAGE_WRITER_COMPONENT);
+        if (this.rayTracer == null)
+            throw new MissingResourceException(RESOURCE_ERROR, RENDER_CLASS, RAY_TRACER_COMPONENT);
+        // Rendering the image
+        int nX = this.imageWriter.getNx();
+        int nY = this.imageWriter.getNy();
+        // The row of the pixel in the image.
+        for (int row = 0; row < nY; row++) {
+            // The column of the pixel in the image.
+            for (int col = 0; col < nX; col++) {
+                Color pixelColor = castRay(nX, nY, col, row);
+                this.imageWriter.writePixel(col, row, pixelColor);
+            }
+        }
+    }
+
+    /**
+     * If the imageWriter is not null, write to the image.
+     */
+    public void writeToImage() {
+        if (this.imageWriter == null) {
+            throw new MissingResourceException(RESOURCE_ERROR, RENDER_CLASS, IMAGE_WRITER_COMPONENT);
+        }
+        this.imageWriter.writeToImage();
+    }
+
+    /**
+     * This function prints a grid on the image, with the given interval and color.
+     *
+     * @param interval the interval between the lines
+     * @param color    the color of the grid
+     */
+    public void printGrid(int interval, Color color) {
+        if (this.imageWriter == null) {
+            throw new MissingResourceException(RESOURCE_ERROR, RENDER_CLASS, IMAGE_WRITER_COMPONENT);
+        }
+        // Prints the grid
+        int nX = this.imageWriter.getNx();
+        int nY = this.imageWriter.getNy();
+        // The row of the pixel in the image.
+        for (int row = 0; row < nY; row++) {
+            // The column of the pixel in the image.
+            for (int col = 0; col < nX; col++) {
+                if (row % interval == 0 || col % interval == 0)
+                    this.imageWriter.writePixel(row, col, color);
+            }
+        }
     }
 }
