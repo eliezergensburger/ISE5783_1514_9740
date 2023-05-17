@@ -1,8 +1,6 @@
 # ISE5783_1514_9740
 A project in the introduction to software engineering for displaying three-dimensional images
 
-##  מיני פרויקט במערכת חלונות - הדמיית חנות בגדים
-
 
 
 ## Skills:
@@ -17,7 +15,7 @@ A project in the introduction to software engineering for displaying three-dimen
 >### • Agile: Refactoring, programming based on testing first, and programming in pairs
 
 
-# **Show Window :**
+# **Show images :**
 ## **Online Store Show** 
 ### **Home Page Photo:**
 ![image](https://user-images.githubusercontent.com/35071116/216076717-8a8885d3-b137-4885-8bb1-b83a9ed6879b.png)
