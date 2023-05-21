@@ -11,7 +11,7 @@ import primitives.Vector;
 /** Polygon class represents two-dimensional polygon in 3D Cartesian coordinate
  * system
  * @author Dan */
-public class Polygon implements Geometry {
+public class Polygon extends Geometry {
     /** List of polygon's vertices */
     protected final List<Point> vertices;
     /** Associated plane in which the polygon lays */
@@ -86,7 +86,43 @@ public class Polygon implements Geometry {
      * @return
      */
     @Override
-    public List<Point> findIntersections(Ray ray) {
-        return null;
+    protected List<GeoPoint> findGeoIntersectionsHelper(Ray ray) {
+        List<GeoPoint> intersections = this.plane.findGeoIntersections(ray);
+
+        // if there is no Intersections at all in the plane
+        if (intersections == null)
+            return null;
+
+        int numOfVertices = vertices.size();
+        Point p0 = ray.getP0();
+        Vector dir = ray.getDir();
+
+        Vector v1 = vertices.get(numOfVertices - 1).subtract(p0);
+        Vector v2 = vertices.get(0).subtract(p0);
+
+        Vector n = v1.crossProduct(v2).normalize();
+        double vn = dir.dotProduct(n);
+        boolean positive = vn > 0;
+
+        if (isZero(vn))
+            return null;
+
+        for (int i = 1; i < numOfVertices; ++i) {
+            v1 = v2;
+            v2 = vertices.get(i).subtract(p0);
+            n = v1.crossProduct(v2).normalize();
+            vn = dir.dotProduct(n);
+
+            //no intersection
+            if (isZero(vn))
+                return null;
+
+            //not the same sign
+            if (vn > 0 != positive)
+                return null;
+        }
+
+        return List.of(new GeoPoint(this, intersections.get(0).point));
     }
+
 }

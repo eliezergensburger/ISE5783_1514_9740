@@ -101,7 +101,7 @@ class SphereTest {
                                 new Point(1, -1, 0),
                                 new Vector(0, 1, 0))),
                 "Line through O, ray from and crosses sphere");
-// TC15: Ray starts inside (1 points)
+// TC15: Ray starts inside (1 point)
         assertEquals(
                 List.of(
                         new Point(1, 1, 0)),
@@ -110,7 +110,7 @@ class SphereTest {
                                 new Point(1, 0.5, 0),
                                 new Vector(0, 1, 0))),
                 "Line through O, ray from inside sphere");
-// TC16: Ray starts at the center (1 points)
+// TC16: Ray starts at the center (1 point)
         assertThrows(
                 IllegalArgumentException.class,
                 () -> sphere.findIntersections(

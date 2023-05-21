@@ -9,7 +9,7 @@ import java.util.List;
 import static primitives.Util.alignZero;
 import static primitives.Util.isZero;
 
-public class Plane implements Geometry {
+public class Plane extends Geometry {
 
     final private Point p0; // A point on the plane
     final  private Vector normal; // The normal vector to the plane
@@ -65,36 +65,42 @@ public class Plane implements Geometry {
      * @return
      */
     @Override
-    public List<Point> findIntersections(Ray ray) {
+    protected List<GeoPoint> findGeoIntersectionsHelper(Ray ray) {
         Point P0 = ray.getP0();
         Vector v = ray.getDir();
         Vector n = normal;
 
-        // ray is lying in the plane axis
-        double nv= n.dotProduct(v);
+        // ray begins at q0 of the plane
+        if (p0.equals(P0)) {
+            return null;
+        }
 
-        //ray direction cannot be parallel to plane oriented
-        if(isZero(nv)){
-            return  null;
+        // ray is laying in the plane axis
+        double nv = n.dotProduct(v);
+
+        //ray direction cannot be parallel to plane orientation
+        if (isZero(nv)) {
+            return null;
         }
 
         Vector P0_Q0 = p0.subtract(P0);
 
-        //numerator
-        double nQMinusP0  = alignZero(n.dotProduct(P0_Q0));
+        // numerator
+        double nQMinusP0 = alignZero(n.dotProduct(P0_Q0));
 
-        // t should  > 0
-        if (isZero(nQMinusP0 )){
+        // t should be > 0
+        if (isZero(nQMinusP0)) {
             return null;
         }
 
-        double  t = alignZero(nQMinusP0 / nv);
+        double t = alignZero(nQMinusP0 / nv);
 
-        // t should  > 0
-        if (t <=0){
-            return  null;
+        // t should be > 0
+        if (t <= 0) {
+            return null;
         }
 
-        return List.of(ray.getPoint(t));
+        // return immutable List
+        return List.of(new GeoPoint(this, ray.getPoint(t)));
     }
 }

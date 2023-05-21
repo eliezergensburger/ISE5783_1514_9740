@@ -8,15 +8,13 @@ import primitives.Double3;
  *
  * @author Israel Jacob & Avraham Meiri
  */
-public class AmbientLight {
-    private final Color intensity;  // intensity of ambient light
-    public static final AmbientLight NONE = new AmbientLight(Color.BLACK, Double3.ZERO);
+public class AmbientLight extends Light {
 
     /**
      * default constructor
      */
     public AmbientLight() {
-        this.intensity = Color.BLACK;
+        super(Color.BLACK);
     }
 
     /**
@@ -25,15 +23,7 @@ public class AmbientLight {
      * @param Ka Light factor
      */
     public AmbientLight(Color Ia, Double3 Ka) {
-        this.intensity = Ia.scale(Ka);
+        super(Ia.scale(Ka));
     }
 
-    /**
-     * getter for intensity field
-     *
-     * @return The intensity of the light.
-     */
-    public Color getIntensity() {
-        return this.intensity;
-    }
 }

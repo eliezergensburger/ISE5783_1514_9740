@@ -38,25 +38,25 @@ public class Sphere extends RadialGeometry{
         return point.subtract(center).normalize();
     }
 
-    /**
-     * @param ray
-     * @return
-     */
     @Override
-    public List<Point> findIntersections(Ray ray) {
-        Point p0 = ray.getP0();
+    protected List<GeoPoint> findGeoIntersectionsHelper(Ray ray) {
+        Point P0 = ray.getP0();
         Vector v = ray.getDir();
 
-        if(p0.equals(center)){
-            throw new IllegalArgumentException("p of Ray is the center of the sphere");
+        if(P0.equals(center)){
+            return List.of(new GeoPoint(this, center.add(v.scale(radius))));
+            //throw new IllegalArgumentException("p of Ray is the center of the sphere");
         }
 
-        Vector u = center.subtract(p0);
-        double tm = u.dotProduct(v);
-        double d = Util.alignZero(Math.sqrt(u.lengthSquared() - tm * tm));
+        Vector u = center.subtract(P0);
 
-        if(d >= this.radius)
+        double tm = alignZero(u.dotProduct(v));
+        double d = alignZero(Math.sqrt(u.lengthSquared() - (tm * tm) ));
+
+        // no intersections : the ray direction is above the sphere
+        if(d >= radius){
             return null;
+        }
 
         double th = alignZero(Math.sqrt( (radius * radius) - (d * d) ));
 
@@ -64,18 +64,17 @@ public class Sphere extends RadialGeometry{
         double t2 = alignZero(tm + th);
 
         if(t1 > 0 && t2 > 0){
-            Point p1 = ray.getPoint(t1);
-            Point p2 = ray.getPoint(t2);
+            GeoPoint p1 = new GeoPoint(this,ray.getPoint(t1));
+            GeoPoint p2 =  new GeoPoint(this,ray.getPoint(t2));
             return List.of(p1, p2);
         }
 
-        if(t1 > 0){
-            return List.of(ray.getPoint(t1));
-        }
-        if(t2 > 0){
-            return List.of(ray.getPoint(t2));
-        }
+        if(t1 > 0)
+            return List.of(new GeoPoint(this, ray.getPoint(t1)));
 
-        return null;
+        if(t2 > 0)
+            return List.of(new GeoPoint(this, ray.getPoint(t2)));
+
+        return null; // no intersections at all
     }
 }
