@@ -11,6 +11,17 @@ public class Material {
     public int nShininess = 0; // shininess
 
     /**
+     * Setter for the Kd field.
+     *
+     * @param Kd Diffuse reflectivity.
+     * @return The material itself.
+     */
+    public Material setKd(Double3 Kd) {
+        this.kD = Kd;
+        return this;
+    }
+
+    /**
      * Setter of the transparency coefficient
      *
      * @param kd coefficient transparency
