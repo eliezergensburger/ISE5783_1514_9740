@@ -19,6 +19,18 @@ public class Ray {
     }
 
     /**
+     * Constructor for ray deflected by epsilon
+     *
+     * @param p0 origin
+     * @param n normal vector
+     * @param dir direction
+     */
+    public Ray(Point p0, Vector n, Vector dir) {
+        this.p0 = p0.add(n.scale(n.dotProduct(dir) > 0 ? 0.1 : -0.1));
+        this.dir = dir.normalize();
+    }
+
+    /**
      * Getter: Gets the origin point of the ray.
      *
      * @return A Point object representing the origin point of the ray.

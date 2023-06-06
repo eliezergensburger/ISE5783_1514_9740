@@ -6,6 +6,7 @@ import primitives.Point;
 import primitives.Ray;
 import primitives.Vector;
 
+import java.util.List;
 import java.util.MissingResourceException;
 
 import static primitives.Util.isZero;
@@ -28,6 +29,9 @@ public class Camera {
 
     private ImageWriter imageWriter;
     private RayTracerBase rayTracer;
+
+    private double _depthOfField;   // distance between view plane and the depth of field plane
+    private double _aperture;       // radius of the aperture of the camera
 
     private static final String RESOURCE_ERROR = "Renderer resource not set";
     private static final String RENDER_CLASS = "Render";
@@ -113,6 +117,26 @@ public class Camera {
         this.imageWriter = imageWriter;
         return this;
     }
+
+
+    public double get_depthOfField() {
+        return _depthOfField;
+    }
+
+    public Camera set_depthOfField(double _depthOfField) {
+        this._depthOfField = _depthOfField;
+        return this;
+    }
+
+    public double get_aperture() {
+        return _aperture;
+    }
+
+    public Camera set_aperture(int _aperture) {
+        this._aperture = _aperture;
+        return this;
+    }
+
 
     /**
      * This function sets the ray tracer for this camera.
@@ -230,4 +254,33 @@ public class Camera {
             }
         }
     }
+
+    /**
+     * Render the image with implementation of the depth of field
+     */
+    public void renderImageWithDepthOfField() {
+        if (imageWriter == null)
+            throw new MissingResourceException("You need to enter a image writer", ImageWriter.class.getName(), "");
+        if (this == null)
+            throw new MissingResourceException("You need to enter a camera", Camera.class.getName(), "");
+        if (rayTracer == null)
+            throw new MissingResourceException("You need to enter a ray tracer", RayTracerBase.class.getName(), "");
+
+        for (int i = 0; i < imageWriter.getNy(); i++) {
+            for (int j = 0; j < imageWriter.getNx(); j++) {
+                Ray myRay = this.constructRay(
+                        imageWriter.getNx(),
+                        imageWriter.getNy(),
+                        j,
+                        i);
+                Ray myRays = this.constructRay(width, height, imageWriter.getNx(), imageWriter.getNy());
+                Color myColor = new Color(0, 0, 0);
+//                for (Ray ray : myRays) { // we pass in the list myRays and for each ray we found his color
+//                    myColor = myColor.add(_rayTracerBase.traceRay(ray)); // we add the color of each ray to myColor
+//                }
+                imageWriter.writePixel(j, i, myColor); // we reduce myColor with the size of my list (number of rays)
+            }
+        }
+    }
 }
+

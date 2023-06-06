@@ -14,7 +14,9 @@ public class Color {
     public static final Color BLACK = new Color();
 
     /** Default constructor - to generate Black Color (privately) */
-    private Color() { rgb = Double3.ZERO; }
+    private Color() {
+        rgb = Double3.ZERO;
+    }
 
     /** Constructor to generate a color according to RGB components Each component
      * in
@@ -103,6 +105,8 @@ public class Color {
     }
 
     @Override
-    public String toString() { return "rgb:" + rgb; }
+    public String toString() {
+        return "rgb:" + rgb;
+    }
 }
     

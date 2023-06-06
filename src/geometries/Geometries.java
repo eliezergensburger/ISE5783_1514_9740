@@ -44,4 +44,28 @@ public class Geometries extends Intersectable {
         }
         return intersections;
     }
+
+    /**
+     * Finds the intersection points of the ray with the surface of the object
+     *
+     * @param ray The ray to intersect with the GeoPoint.
+     * @param maxDistance The maximum distance from the source of the ray to intersect with.
+     * @return A list of GeoPoints that are the intersections of the ray with the object.
+     */
+    @Override
+    protected List<GeoPoint> findGeoIntersectionsHelper(Ray ray, double maxDistance) {
+        List<GeoPoint> intersections = null;
+        for (var item : this.items) {
+            //get intersections points of a particular item from intersectables
+            var points = item.findGeoIntersections(ray, maxDistance);
+            if (points != null) {
+                //first time initialize result to new LinkedList
+                if (intersections == null)
+                    intersections = new LinkedList<>();
+                //add all item points to the resulting list
+                intersections.addAll(points);
+            }
+        }
+        return intersections;
+    }
 }
