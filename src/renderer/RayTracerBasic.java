@@ -105,7 +105,6 @@ public class RayTracerBasic extends RayTracerBase {
     /**
      * If there's no intersection, return the background color, otherwise return the color of the intersection point,
      * scaled by the kx(kt/kr) coefficient.
-     *
      * The function is recursive, and the recursion stops when the level reaches 0
      *
      * @param ray the ray that we're currently tracing
@@ -235,36 +234,6 @@ public class RayTracerBasic extends RayTracerBase {
     private Double3 calcDiffusive(Material material, double nl) {
         nl = Math.abs(nl);
         return material.kD.scale(nl);
-    }
-
-    /**
-     * The function checks returns if the point is unshaded or shaded.
-     *
-     * @param gp          The point on the geometry that we're shading
-     * @param lightSource The light source that we're checking if it's shaded or not.
-     * @param l           The vector from the point to the light source
-     * @param n           the normal vector of the point
-     * @return true if the point is unshaded, and false if it is shaded.
-     */
-    private boolean unshaded(GeoPoint gp, LightSource lightSource, Vector l, Vector n) {
-        Point point = gp.point;
-        Vector lightDirection = l.scale(-1); // from point to light source
-        Ray lightRay = new Ray(point, n, lightDirection);
-
-        // Calculates the maximum distance from the ray to the surface
-        double maxDistance = lightSource.getDistance(point);
-
-        // Get the intersections
-        List<GeoPoint> intersections = scene.geometries.findGeoIntersections(lightRay, maxDistance);
-
-        if (intersections == null)
-            return true;
-
-        for (var intersection: intersections) {
-            if(intersection.geometry.getMaterial().kT.lowerThan(MIN_CALC_COLOR_K))
-                return false;
-        }
-        return true;
     }
 
     /**

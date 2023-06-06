@@ -14,7 +14,7 @@ public abstract class RayTracerBase {
 
     /**
      * Constructor for RayTracerBase
-     * @param scene
+     * @param scene אhe scene to be rendered.
      */
     protected RayTracerBase(Scene scene){
         this.scene = scene;

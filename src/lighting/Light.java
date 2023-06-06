@@ -11,13 +11,14 @@ abstract class Light {
     private Color intensity;
 
     /**
-     * Constructor for light class
-     *
-     * @param intensity
+
+     Constructs a light source with the specified intensity.
+     @param intensity The intensity of the light source, represented by a {@link Color} object.
      */
-    protected Light(Color intensity){
+    protected Light(Color intensity) {
         this.intensity = intensity;
     }
+    /**
 
     /**
      * Getter for the light intensity.

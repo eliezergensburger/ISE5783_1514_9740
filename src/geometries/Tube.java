@@ -6,7 +6,6 @@ import primitives.Util;
 import primitives.Vector;
 
 import java.util.List;
-import primitives.Util.*;
 
 public class Tube extends RadialGeometry {
 
@@ -41,8 +40,10 @@ public class Tube extends RadialGeometry {
     }
 
     /**
-     * @param ray
-     * @return
+
+     Finds the intersection points of the given ray with the geometry.
+     @param ray The ray to intersect with the geometry.
+     @return A list of {@link GeoPoint} objects representing the intersection points, or null if there are no intersections.
      */
     @Override
     protected List<GeoPoint> findGeoIntersectionsHelper(Ray ray) {

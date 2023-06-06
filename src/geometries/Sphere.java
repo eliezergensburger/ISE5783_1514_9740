@@ -4,10 +4,7 @@ package geometries;
 import primitives.Point;
 import primitives.Ray;
 import primitives.Vector;
-import primitives.Util;
-
 import java.lang.Math;
-import java.util.ArrayList;
 import java.util.List;
 
 import static primitives.Util.alignZero;

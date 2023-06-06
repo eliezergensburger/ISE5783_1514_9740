@@ -60,10 +60,6 @@ public class Plane extends Geometry {
         return normal;
     }
 
-    /**
-     * @param ray
-     * @return
-     */
     @Override
     protected List<GeoPoint> findGeoIntersectionsHelper(Ray ray) {
         Point P0 = ray.getP0();

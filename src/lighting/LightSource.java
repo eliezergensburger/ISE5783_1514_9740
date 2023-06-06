@@ -18,7 +18,7 @@ public interface LightSource {
      * @param p the point at which to calculate the light intensity
      * @return the intensity of the light as a Color object
      */
-    public Color getIntensity(Point p);
+    Color getIntensity(Point p);
 
     /**
      * Returns the direction of the light from the given point.
@@ -26,7 +26,7 @@ public interface LightSource {
      * @param p the point from which to calculate the light direction
      * @return the direction of the light as a Vector object
      */
-    public Vector getL(Point p);
+    Vector getL(Point p);
 
     /**
      * Returns the distance from the light source to the given point.

@@ -64,7 +64,7 @@ public class Polygon extends Geometry {
         // with
         // the normal. If all the rest consequent edges will generate the same sign -
         // the
-        // polygon is convex ("kamur" in Hebrew).
+        // polygon is convex.
         boolean positive = edge1.crossProduct(edge2).dotProduct(n) > 0;
         for (var i = 1; i < vertices.length; ++i) {
             // Test that the point is in the same plane as calculated originally
@@ -81,10 +81,7 @@ public class Polygon extends Geometry {
     @Override
     public Vector getNormal(Point point) { return plane.getNormal(); }
 
-    /**
-     * @param ray
-     * @return
-     */
+
     @Override
     protected List<GeoPoint> findGeoIntersectionsHelper(Ray ray) {
         List<GeoPoint> intersections = this.plane.findGeoIntersections(ray);
@@ -125,50 +122,8 @@ public class Polygon extends Geometry {
         return List.of(new GeoPoint(this, intersections.get(0).point));
     }
 
-    /**
-     * Finds the intersection points of the ray with the surface of the object
-     *
-     * @param ray The ray to intersect with the GeoPoint.
-     * @param maxDistance The maximum distance from the source of the ray to intersect with.
-     * @return A list of GeoPoints that are the intersections of the ray with the object.
-     */
     @Override
     protected List<GeoPoint> findGeoIntersectionsHelper(Ray ray, double maxDistance) {
-        List<GeoPoint> intersections = this.plane.findGeoIntersections(ray, maxDistance);
-
-        // if there is no Intersections at all in the plane
-        if (intersections == null)
-            return null;
-
-        int numOfVertices = vertices.size();
-        Point p0 = ray.getP0();
-        Vector dir = ray.getDir();
-
-        Vector v1 = vertices.get(numOfVertices - 1).subtract(p0);
-        Vector v2 = vertices.get(0).subtract(p0);
-
-        Vector n = v1.crossProduct(v2).normalize();
-        double vn = dir.dotProduct(n);
-        boolean positive = vn > 0;
-
-        if (isZero(vn))
-            return null;
-
-        for (int i = 1; i < numOfVertices; ++i) {
-            v1 = v2;
-            v2 = vertices.get(i).subtract(p0);
-            n = v1.crossProduct(v2).normalize();
-            vn = dir.dotProduct(n);
-
-            //no intersection
-            if (isZero(vn))
-                return null;
-
-            //not the same sign
-            if (vn > 0 != positive)
-                return null;
-        }
-
-        return List.of(new GeoPoint(this, intersections.get(0).point));
+        return null;
     }
 }

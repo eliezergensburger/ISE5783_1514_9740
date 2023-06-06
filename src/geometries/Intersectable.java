@@ -22,10 +22,10 @@ public abstract class Intersectable {
         public final Point point;
 
         /**
-         * Constructor for GeoPoint
-         *
-         * @param geometry
-         * @param point
+
+         Constructs a GeoPoint object with the specified geometry and point.
+         @param geometry The geometry to which the point belongs.
+         @param point The coordinates of the point.
          */
         public GeoPoint(Geometry geometry, Point point){
             this.geometry = geometry;
