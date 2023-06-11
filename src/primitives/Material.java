@@ -84,7 +84,7 @@ public class Material {
     /**
      * Setter for the reflection coefficient field.
      *
-     * @param Kr The reflection coefficient of the material.
+         * @param Kr The reflection coefficient of the material.
      * @return The material itself.
      */
     public Material setKr(Double3 Kr) {

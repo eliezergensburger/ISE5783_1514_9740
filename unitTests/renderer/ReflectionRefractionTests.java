@@ -22,7 +22,7 @@ import scene.Scene;
 public class ReflectionRefractionTests {
     private Scene scene = new Scene.SceneBuilder("Test scene").build();
 
-    /** Produce a picture of a sphere lighted by a spot light */
+    /** Produce a picture of a sphere lighted by a spotlight */
     @Test
     public void twoSpheres() {
         Camera camera = new Camera(new Point(0, 0, 1000), new Vector(0, 0, -1), new Vector(0, 1, 0)) //

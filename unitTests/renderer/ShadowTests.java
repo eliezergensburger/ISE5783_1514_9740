@@ -50,7 +50,7 @@ public class ShadowTests {
     public void sphereTriangleMove1() {
         sphereTriangleHelper("shadowSphereTriangleMove1", //
                 new Triangle(new Point(-18, -49, 0), new Point(-49, -18, 0), new Point(-47, -47, -4)), //
-        new Point(-100, -100, 200));
+                new Point(-100, -100, 200));
     }
 
     /**
@@ -60,7 +60,7 @@ public class ShadowTests {
     public void sphereTriangleMove2() {
         sphereTriangleHelper("shadowSphereTriangleMove2", //
                 new Triangle(new Point(-33, -60, 0), new Point(-60, -33, 0), new Point(-57, -57, -4)), //
-        new Point(-100, -100, 200));
+                new Point(-100, -100, 200));
     }
 
     /** Sphere-Triangle shading - move spot closer */
@@ -110,9 +110,9 @@ public class ShadowTests {
     @Test
     public void f(){
         List<Intersectable.GeoPoint> inte = new Scene.SceneBuilder("egdf").setGeometries(new Geometries(new Triangle(new Point(-70, -40, 0), new Point(-40, -70, 0), new Point(-68, -68, -4)) , new Sphere(60d, new Point(0,0,-200)))).build().geometries.findGeoIntersections(new Ray(new Point(-100, -100, 200), new Vector(1, 1, -3)));
-    Intersectable.GeoPoint inter = new Ray(new Point(-100, -100, 200), new Vector(1, 1, -3)).findClosestGeoPoint(inte);
-    System.out.println(new Point(0,0,-36.96).distance(new Point(-14,-14,-36.96)));
-    System.out.println(inter);
+        Intersectable.GeoPoint inter = new Ray(new Point(-100, -100, 200), new Vector(1, 1, -3)).findClosestGeoPoint(inte);
+        System.out.println(new Point(0,0,-36.96).distance(new Point(-14,-14,-36.96)));
+        System.out.println(inter);
 
     }
 
