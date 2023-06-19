@@ -90,8 +90,22 @@ public class OurPictureTest {
 //        scene.lights.add(new PointLight(new Color(400, 240, 0), new Point(-100,-100,200)) //
 //                .setKl(1E-5).setKq(1.5E-7));
 
-        camera.setImageWriter(new ImageWriter("Our picture", 5000, 5000)) //
+        camera.setImageWriter(new ImageWriter("Our picture", 400, 400)) //
                 .renderImage() //
+                .writeToImage();
+    }
+
+    @Test
+    public void ourTest2(){
+
+//        scene.lights.add(new PointLight(new Color(400, 240, 0), new Point(-100,-100,200)) //
+//                .setKl(1E-5).setKq(1.5E-7));
+
+        camera.setImageWriter(new ImageWriter("Our picture2", 400, 400)) //
+                .setAperture(3)
+                .setDepthOfField(100)
+                .setGridParams(10)
+                .renderImageWithDepthOfField() //
                 .writeToImage();
     }
 }

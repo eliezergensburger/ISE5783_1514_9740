@@ -1,17 +1,25 @@
 package renderer;
 
 
+import geometries.Intersectable;
+import geometries.Plane;
 import primitives.Color;
 import primitives.Point;
 import primitives.Ray;
 import primitives.Vector;
+
+import java.util.LinkedList;
+import java.util.List;
 import java.util.MissingResourceException;
+import java.util.Random;
+
+import static primitives.Util.alignZero;
 import static primitives.Util.isZero;
 
 /**
  * This class represented a camera
  *
- * @author Amiad Korman & Omer Dayan
+ * @author Yisrael Jacob & Avraham Meiri
  */
 public class Camera {
 
@@ -26,6 +34,9 @@ public class Camera {
 
     private ImageWriter imageWriter;
     private RayTracerBase rayTracer;
+    private double depthOfField;
+    private double aperture;
+    int n;
     private static final String RESOURCE_ERROR = "Renderer resource not set";
     private static final String RENDER_CLASS = "Render";
     private static final String IMAGE_WRITER_COMPONENT = "Image writer";
@@ -123,6 +134,81 @@ public class Camera {
         return this;
     }
 
+    public double getDepthOfField() {
+        return depthOfField;
+    }
+
+    public Camera setDepthOfField(double _depthOfField) {
+        this.depthOfField = _depthOfField;
+        return this;
+    }
+
+    public double getAperture() {
+        return aperture;
+    }
+
+    public Camera setAperture(double aperture) {
+        this.aperture = aperture;
+        return this;
+    }
+
+    public Camera setGridParams(int n) {
+        this.n = n;
+        return this;
+    }
+
+    public double getDofByPoint(Point point){
+        Point vpCenterPoint = p0.add(vTo.scale(distance));
+        Vector v = point.subtract(p0);
+        Point p2 = vpCenterPoint.add(vUp);
+        Point p3 = vpCenterPoint.add(vRight);
+
+        Plane plane = new Plane(vpCenterPoint, p2, p3);
+
+        List<Intersectable.GeoPoint> l = plane.findGeoIntersections(new Ray(p0, v));
+
+        Point point1 = l.get(0).point;
+//        Vector cameraToPoint = point.subtract(p0);
+//        Vector normal = vRight.crossProduct(vUp);
+//
+//        double a = normal.getCoordinate().getX();
+//        double b = normal.getCoordinate().getY();
+//        double c = normal.getCoordinate().getZ();
+//
+//
+//        double d = -(a * vpCenterPoint.getCoordinate().getX()
+//                    + b * vpCenterPoint.getCoordinate().getY()
+//                    + c * vpCenterPoint.getCoordinate().getZ());
+//
+//        double alpha = (d - (a * p0.getCoordinate().getX() + b * p0.getCoordinate().getY() + c * p0.getCoordinate().getZ()))/
+//                (a * vTo.getCoordinate().getX() + b * vTo.getCoordinate().getY() + c * vTo.getCoordinate().getZ());
+//
+//        double x = a * (p0.getCoordinate().getX() + vTo.getCoordinate().getX());
+//        double y = b * (p0.getCoordinate().getY() + vTo.getCoordinate().getY());
+//        double z = c * (p0.getCoordinate().getZ() + vTo.getCoordinate().getZ());
+//
+//        Point vpPoint = new Point(x, y, z);
+
+        return point1.distance(point);
+
+
+
+//        double nv = normal.dotProduct(cameraToPoint);
+//
+//        // ray direction is parallel to the plane
+//        if (isZero(nv))
+//            throw new IllegalArgumentException("there is no such a point in the view");
+//
+//        Vector p0P = p0.subtract(this.p0);
+//        double t = alignZero(normal.dotProduct(p0P) / nv);
+//
+//        // intersection point is behind the ray
+//        if (t <= 0)
+//            throw new IllegalArgumentException("there is no such a point in the view");
+//
+//        return ray.getPoint(t);
+
+    }
     /**
      * Construct a ray through the pixel [i,j] on the view plane,
      * when the view plane is divided into nX by nY rectangular cells
@@ -157,6 +243,71 @@ public class Camera {
     }
 
     /**
+     * @param ray the ray from the center of the camera
+     * @param n the number of squares in height and width (of the grid)
+     *          this function construct a grid around the circle of the camera
+     * @return the list of all the rays from each pixel in the camera
+     */
+    public List<Ray> constructRaysGridFromCamera(int n, Ray ray) { // we construct a square around the circle of the camera, the size n=2*radius(aperture)
+        // we launch a ray (we choose a random _focusPoint in the pixel)  from each pixel of the grid, and
+        // we select only the ray IN the circle of the camera
+
+        List<Ray> myRays = new LinkedList<>(); //the list of all the rays
+
+        double t0 = depthOfField + distance; // distance from the central focusPoint of the camera to the focus focusPoint
+        double t = t0 / (vTo.dotProduct(ray.getDir())); // distance from the focusPoint on the aperture grid to the focus focusPoint ( found with the cosines)
+        Point focusPoint = ray.getPoint(t); // we found the focus focusPoint
+
+        double pixelSize = alignZero((aperture * 2) / n); // the size of each pixel
+
+        // we construct a ray from each pixel of the grid, and we select only the rays in the circle
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                Ray tmpRay = constructRayFromPixel(n, n, j, i, pixelSize, focusPoint);
+                // we check if each ray is in the circle of the camera
+                if (tmpRay.getP0().equals(p0)) {// if the ray is from the camera center
+                    myRays.add(tmpRay); // we add the ray to the list myRays
+                } else if (tmpRay.getP0().subtract(p0).dotProduct(tmpRay.getP0().subtract(p0)) <= aperture * aperture) {
+                    // if the distance with the center (squared) is <= the square of the radius -> the ray is in the circle of the camera
+                    myRays.add(tmpRay); // we add the ray to the list myRays
+                }
+            }
+        }
+        return myRays; // we return  the list of all my rays in the circle
+    }
+
+    /**
+     *
+     * @param nX grid's width
+     * @param nY grid's height
+     * @param j y emplacement of the point
+     * @param i x emplacement of the point
+     * @param pixelSize size of the pixel
+     * @param focusPoint point on the focus plane
+     * @return a ray from the pixel to the focus point
+     */
+    private Ray constructRayFromPixel(int nX, int nY, double j, double i, double pixelSize, Point focusPoint) {
+
+        Point pIJ = p0;
+
+        Random r = new Random(); // we want a random point for each pixel for more precision
+
+        double xJ = ((j + r.nextDouble() / (r.nextBoolean() ? 2 : -2)) - ((nX - 1) / 2d)) * pixelSize;
+        double yI = -((i + r.nextDouble() / (r.nextBoolean() ? 2 : -2)) - ((nY - 1) / 2d)) * pixelSize;
+
+        if (xJ != 0) {
+            pIJ = pIJ.add(vRight.scale(xJ));
+        }
+        if (yI != 0) {
+            pIJ = pIJ.add(vUp.scale(yI));
+        }
+
+        Vector vIJ = focusPoint.subtract(pIJ);
+
+        return new Ray(pIJ, vIJ); // return a new ray from a pixel
+    }
+
+    /**
      * This function constructs a ray from the camera through the pixel at (nX, nY) and then traces that ray through the
      * scene to determine the color of the pixel
      *
@@ -187,8 +338,36 @@ public class Camera {
         for (int row = 0; row < nY; row++) {
             // The column of the pixel in the image.
             for (int col = 0; col < nX; col++) {
-                Color pixelColor = castRay(nX, nY, col, row);
+                Ray ray = constructRay(nX, nY, col, row);
+                Color pixelColor = this.rayTracer.traceRay(ray);
                 this.imageWriter.writePixel(col, row, pixelColor);
+            }
+        }
+        return this;
+    }
+
+    /**
+     * Render the image with implementation of the depth of field
+     */
+    public Camera renderImageWithDepthOfField() {
+        if (imageWriter == null)
+            throw new MissingResourceException("You need to enter a image writer", ImageWriter.class.getName(), "");
+        if (rayTracer == null)
+            throw new MissingResourceException("You need to enter a ray tracer", RayTracerBase.class.getName(), "");
+
+        for (int i = 0; i < imageWriter.getNy(); i++) {
+            for (int j = 0; j < imageWriter.getNx(); j++) {
+                Ray myRay = constructRay(
+                        imageWriter.getNx(),
+                        imageWriter.getNy(),
+                        j,
+                        i);
+                List<Ray> myRays = constructRaysGridFromCamera(n, myRay);
+                Color myColor = new Color(0, 0, 0);
+                for (Ray ray : myRays) { // we pass in the list myRays and for each ray we found his color
+                    myColor = myColor.add(rayTracer.traceRay(ray)); // we add the color of each ray to myColor
+                }
+                imageWriter.writePixel(j, i, myColor.reduce(myRays.size())); // we reduce myColor with the size of my list (number of rays)
             }
         }
         return this;
@@ -226,5 +405,7 @@ public class Camera {
             }
         }
     }
+
+
 }
 

@@ -51,6 +51,36 @@ public class RayTracerBasic extends RayTracerBase {
     }
 
     /**
+     * The function checks returns if the point is unshaded or shaded.
+     *
+     * @param gp          The point on the geometry that we're shading
+     * @param lightSource The light source that we're checking if it's shaded or not.
+     * @param l           The vector from the point to the light source
+     * @param n           the normal vector of the point
+     * @return true if the point is unshaded, and false if it is shaded.
+     */
+    private boolean unshaded(GeoPoint gp, LightSource lightSource, Vector l, Vector n) {
+        Point point = gp.point;
+        Vector lightDirection = l.scale(-1); // from point to light source
+        Ray lightRay = new Ray(point, n, lightDirection);
+
+        // Calculates the maximum distance from the ray to the surface
+        double maxDistance = lightSource.getDistance(point);
+
+        // Get the intersections
+        List<GeoPoint> intersections = scene.geometries.findGeoIntersections(lightRay, maxDistance);
+
+        if (intersections == null)
+            return true;
+
+        for (var intersection: intersections) {
+            if(intersection.geometry.getMaterial().kT.lowerThan(MIN_CALC_COLOR_K))
+                return false;
+        }
+        return true;
+    }
+
+    /**
      * It calculates the color of a point on a surface, by calculating the color of the point, and adding the ambient light
      * to it
      *
@@ -192,13 +222,14 @@ public class RayTracerBasic extends RayTracerBase {
             Vector l = lightSource.getL(gp.point);
             double nl = alignZero(n.dotProduct(l));
             if (nl * nv > 0) { // sign(nl) == sing(nv)
-
+                if (unshaded(gp, lightSource, l, n)) {
                 Double3 ktr = transparency(gp,lightSource, l, n);
                 if (!ktr.product(k).lowerThan(MIN_CALC_COLOR_K) ) {
                     Color iL = lightSource.getIntensity(gp.point).scale(ktr);
                     color = color.add(
                             iL.scale(calcDiffusive(material, nl)),
                             iL.scale(calcSpecular(material, n, l, nl, v)));
+                    }
                 }
             }
         }

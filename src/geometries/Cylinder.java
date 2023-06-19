@@ -4,6 +4,8 @@ import primitives.Point;
 import primitives.Ray;
 import primitives.Vector;
 
+import static primitives.Util.alignZero;
+
 public class Cylinder extends Tube{
 
     final private double height; // The height of the cylinder

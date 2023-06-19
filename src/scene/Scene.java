@@ -18,6 +18,7 @@ public class Scene {
     public final String name;
     public final Color background;
     public final AmbientLight ambientLight;
+
     public final Geometries geometries;
 
     public List<LightSource> lights;
