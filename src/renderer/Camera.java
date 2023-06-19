@@ -12,6 +12,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.MissingResourceException;
 import java.util.Random;
+import java.util.stream.IntStream;
 
 import static primitives.Util.alignZero;
 import static primitives.Util.isZero;
@@ -23,10 +24,10 @@ import static primitives.Util.isZero;
  */
 public class Camera {
 
-    private Vector vRight;
-    private Vector vTo;
-    private Vector vUp;
-    private Point p0;
+    private final Vector vRight;
+    private final Vector vTo;
+    private final Vector vUp;
+    private final Point p0;
 
     private double distance;
     private int width;
@@ -37,6 +38,7 @@ public class Camera {
     private double depthOfField;
     private double aperture;
     int n;
+    private boolean splitToThreads = false;
     private static final String RESOURCE_ERROR = "Renderer resource not set";
     private static final String RENDER_CLASS = "Render";
     private static final String IMAGE_WRITER_COMPONENT = "Image writer";
@@ -95,6 +97,12 @@ public class Camera {
      */
     public Camera setVPDistance(double distance) {
         this.distance = distance;
+        return this;
+    }
+
+
+    public Camera setMultithreading(boolean bool) {
+        this.splitToThreads = bool;
         return this;
     }
 
@@ -168,47 +176,9 @@ public class Camera {
         List<Intersectable.GeoPoint> l = plane.findGeoIntersections(new Ray(p0, v));
 
         Point point1 = l.get(0).point;
-//        Vector cameraToPoint = point.subtract(p0);
-//        Vector normal = vRight.crossProduct(vUp);
-//
-//        double a = normal.getCoordinate().getX();
-//        double b = normal.getCoordinate().getY();
-//        double c = normal.getCoordinate().getZ();
-//
-//
-//        double d = -(a * vpCenterPoint.getCoordinate().getX()
-//                    + b * vpCenterPoint.getCoordinate().getY()
-//                    + c * vpCenterPoint.getCoordinate().getZ());
-//
-//        double alpha = (d - (a * p0.getCoordinate().getX() + b * p0.getCoordinate().getY() + c * p0.getCoordinate().getZ()))/
-//                (a * vTo.getCoordinate().getX() + b * vTo.getCoordinate().getY() + c * vTo.getCoordinate().getZ());
-//
-//        double x = a * (p0.getCoordinate().getX() + vTo.getCoordinate().getX());
-//        double y = b * (p0.getCoordinate().getY() + vTo.getCoordinate().getY());
-//        double z = c * (p0.getCoordinate().getZ() + vTo.getCoordinate().getZ());
-//
-//        Point vpPoint = new Point(x, y, z);
-
         return point1.distance(point);
-
-
-
-//        double nv = normal.dotProduct(cameraToPoint);
-//
-//        // ray direction is parallel to the plane
-//        if (isZero(nv))
-//            throw new IllegalArgumentException("there is no such a point in the view");
-//
-//        Vector p0P = p0.subtract(this.p0);
-//        double t = alignZero(normal.dotProduct(p0P) / nv);
-//
-//        // intersection point is behind the ray
-//        if (t <= 0)
-//            throw new IllegalArgumentException("there is no such a point in the view");
-//
-//        return ray.getPoint(t);
-
     }
+
     /**
      * Construct a ray through the pixel [i,j] on the view plane,
      * when the view plane is divided into nX by nY rectangular cells
@@ -308,21 +278,6 @@ public class Camera {
     }
 
     /**
-     * This function constructs a ray from the camera through the pixel at (nX, nY) and then traces that ray through the
-     * scene to determine the color of the pixel
-     *
-     * @param nX  the x coordinate of the pixel on the screen
-     * @param nY  the y-coordinate of the pixel in the image
-     * @param col the column of the pixel
-     * @param row the row of the pixel in the image
-     * @return The color of the pixel.
-     */
-    private Color castRay(int nX, int nY, int col, int row) {
-        Ray ray = constructRay(nX, nY, col, row);
-        return this.rayTracer.traceRay(ray);
-    }
-
-    /**
      * > The function iterates over all the pixels in the image and casts a ray through each pixel
      */
     public Camera renderImage() {
@@ -334,14 +289,33 @@ public class Camera {
         // Rendering the image
         int nX = this.imageWriter.getNx();
         int nY = this.imageWriter.getNy();
-        // The row of the pixel in the image.
+
+        Ray[][] rays = new Ray[nY][nX];
         for (int row = 0; row < nY; row++) {
-            // The column of the pixel in the image.
             for (int col = 0; col < nX; col++) {
-                Ray ray = constructRay(nX, nY, col, row);
-                Color pixelColor = this.rayTracer.traceRay(ray);
-                this.imageWriter.writePixel(col, row, pixelColor);
+                rays[row][col] = constructRay(nX, nY, col, row);
             }
+        }
+
+        if (!splitToThreads) {
+            // The row of the pixel in the image.
+            for (int row = 0; row < nY; row++) {
+                // The column of the pixel in the image.
+                for (int col = 0; col < nX; col++) {
+                    Ray ray = rays[row][col];
+                    Color pixelColor = this.rayTracer.traceRay(ray);
+                    this.imageWriter.writePixel(col, row, pixelColor);
+                }
+            }
+        } else {
+            //rendering image with using of threads
+            IntStream.range(0, nY).parallel().forEach(row ->
+                    IntStream.range(0, nX).parallel().forEach(col -> {
+                        Ray ray = rays[row][col];
+                        Color pixelColor = this.rayTracer.traceRay(ray);
+                        this.imageWriter.writePixel(col, row, pixelColor);
+                    })
+            );
         }
         return this;
     }
@@ -355,20 +329,34 @@ public class Camera {
         if (rayTracer == null)
             throw new MissingResourceException("You need to enter a ray tracer", RayTracerBase.class.getName(), "");
 
-        for (int i = 0; i < imageWriter.getNy(); i++) {
-            for (int j = 0; j < imageWriter.getNx(); j++) {
-                Ray myRay = constructRay(
-                        imageWriter.getNx(),
-                        imageWriter.getNy(),
-                        j,
-                        i);
-                List<Ray> myRays = constructRaysGridFromCamera(n, myRay);
-                Color myColor = new Color(0, 0, 0);
-                for (Ray ray : myRays) { // we pass in the list myRays and for each ray we found his color
-                    myColor = myColor.add(rayTracer.traceRay(ray)); // we add the color of each ray to myColor
+        int nX = this.imageWriter.getNx();
+        int nY = this.imageWriter.getNy();
+        if(!splitToThreads) {
+            for (int row = 0; row < nY; row++) {
+                for (int col = 0; col < nX; col++) {
+                    Ray myRay = constructRay(nX, nY, col, row);
+                    List<Ray> myRays = constructRaysGridFromCamera(n, myRay);
+                    Color myColor = new Color(0, 0, 0);
+                    for (Ray ray : myRays) { // we pass in the list myRays and for each ray we found his color
+                        myColor = myColor.add(rayTracer.traceRay(ray)); // we add the color of each ray to myColor
+                    }
+                    imageWriter.writePixel(col, row, myColor.reduce(myRays.size())); // we reduce myColor with the size of my list (number of rays)
                 }
-                imageWriter.writePixel(j, i, myColor.reduce(myRays.size())); // we reduce myColor with the size of my list (number of rays)
             }
+        }
+        else {
+            //rendering image with using of threads
+            IntStream.range(0, nY).parallel().forEach(row ->
+                    IntStream.range(0, nX).parallel().forEach(col -> {
+                        Ray myRay = constructRay(nX, nY, col, row);
+                        List<Ray> myRays = constructRaysGridFromCamera(n, myRay);
+                        Color myColor = new Color(0, 0, 0);
+                        for (Ray ray : myRays) { // we pass in the list myRays and for each ray we found his color
+                            myColor = myColor.add(rayTracer.traceRay(ray)); // we add the color of each ray to myColor
+                        }
+                        imageWriter.writePixel(col, row, myColor.reduce(myRays.size())); // we reduce myColor with the size of my list (number of rays)
+                    })
+            );
         }
         return this;
     }

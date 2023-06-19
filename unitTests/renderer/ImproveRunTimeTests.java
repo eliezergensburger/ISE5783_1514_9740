@@ -5,11 +5,13 @@ import lighting.*;
 import org.junit.jupiter.api.Test;
 import primitives.*;
 import scene.Scene;
+
 import java.util.LinkedList;
 import java.util.List;
+
 import static java.awt.Color.*;
 
-public class DofTests {
+public class ImproveRunTimeTests {
 
     Geometries geometries = new Geometries();
     Material material = new Material().setKs(0.7).setKd(0.4).setShininess(30);
@@ -92,12 +94,14 @@ public class DofTests {
     //add tables and chairs
     void createTablesAndChairs(Point point){
         for (int i = 0; i < 3; i++){
+            Double3 coori = point.getCoordinate();
             Point myPointi;
             if (i != 0)
                 myPointi = point.add(new Vector(0, i * 140, 0));
             else
                 myPointi = point;
             for (int j = 0; j < 3; j++){
+                Double3 coorj = myPointi.getCoordinate();
                 Point myPointj;
                 if(j != 0)
                     myPointj = myPointi.add(new Vector(j * 80, 0, 0));
@@ -151,23 +155,52 @@ public class DofTests {
     }
 
     @Test
-    void withoutDofTest(){
+    void BeforMultithreadingTest(){
+
+        // without dof
         Camera camera = createAll();
-        camera.setImageWriter(new ImageWriter("without dof", 2000, 2000)) //
+        long startTime =  System.currentTimeMillis();
+        camera.setImageWriter(new ImageWriter("without dof1111", 200, 200)) //
                 .renderImage() //
                 .writeToImage();
 
-    }
 
-    @Test
-    void withDofTest(){
-        Camera camera = createAll();
+        //with dof
         double dof = camera.getDofByPoint(new Point(120,  100, -46.5));
         camera.setGridParams(6)
                 .setAperture(5)
                 .setDepthOfField(dof)
-                .setImageWriter(new ImageWriter("with dof", 1000, 1000))
+                .setImageWriter(new ImageWriter("with dof1111", 100, 100))
                 .renderImageWithDepthOfField()
                 .writeToImage();
+        long endTime = System.currentTimeMillis();
+        System.out.println("The test took " + (endTime - startTime) + " mile seconds");
+
     }
+
+    @Test
+    void AfterMultithreadingTest(){
+
+        // without dof
+        Camera camera = createAll().setMultithreading(true);
+        long startTime =  System.currentTimeMillis();
+        camera.setImageWriter(new ImageWriter("without dof1111", 200, 200)) //
+                .renderImage() //
+                .writeToImage();
+
+
+        //with dof
+        double dof = camera.getDofByPoint(new Point(120,  100, -46.5));
+        camera.setGridParams(6)
+                .setAperture(5)
+                .setDepthOfField(dof)
+                .setImageWriter(new ImageWriter("with dof1111", 100, 100))
+                .renderImageWithDepthOfField()
+                .writeToImage();
+        long endTime = System.currentTimeMillis();
+        System.out.println("The test took " + (endTime - startTime) + " mile seconds");
+
+    }
+
 }
+

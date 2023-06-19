@@ -5,14 +5,13 @@ import static java.awt.Color.*;
 import org.junit.jupiter.api.Test;
 
 import geometries.*;
-import lighting.*;
 import primitives.*;
 import renderer.*;
 import scene.Scene;
 
 /** Test rendering a basic image
  * @author Dan */
-class LightsTests {
+class LightingTests {
     private final Scene scene1 = new Scene.SceneBuilder("Test scene").build();
     private final Scene scene2 = new Scene.SceneBuilder("Test scene")
             .setAmbientLight(new AmbientLight(new Color(WHITE), new Double3(0.15))).build();
