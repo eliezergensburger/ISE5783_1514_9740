@@ -22,6 +22,10 @@ public class Geometries extends Intersectable {
         items.addAll(List.of(geometries));
     }
 
+    public List<Intersectable> getItems() {
+        return items;
+    }
+
     /**
      * implementation of findGeoIntersectionsHelper from Intersectable
      *

@@ -78,6 +78,10 @@ public class Polygon extends Geometry {
         }
     }
 
+    public List<Point> getVertices() {
+        return vertices;
+    }
+
     @Override
     public Vector getNormal(Point point) { return plane.getNormal(); }
 

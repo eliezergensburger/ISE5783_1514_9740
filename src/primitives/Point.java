@@ -75,4 +75,19 @@ public class Point {
     public double distance(Point p) {
         return sqrt(this.distanceSquared(p));
     }
+
+
+    public Point min(Point p){
+        double x = Math.min(this.coordinate.getX(), p.coordinate.getX());
+        double y = Math.min(this.coordinate.getY(), p.coordinate.getY());
+        double z = Math.min(this.coordinate.getZ(), p.coordinate.getZ());
+        return new Point(x, y, z);
+    }
+
+    public Point max(Point p){
+        double x = Math.max(this.coordinate.getX(), p.coordinate.getX());
+        double y = Math.max(this.coordinate.getY(), p.coordinate.getY());
+        double z = Math.max(this.coordinate.getZ(), p.coordinate.getZ());
+        return new Point(x, y, z);
+    }
 }

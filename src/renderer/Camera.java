@@ -35,10 +35,14 @@ public class Camera {
 
     private ImageWriter imageWriter;
     private RayTracerBase rayTracer;
+
+
     private double depthOfField;
     private double aperture;
+    private PixelManager pixelManager;
     int n;
     private boolean splitToThreads = false;
+
     private static final String RESOURCE_ERROR = "Renderer resource not set";
     private static final String RENDER_CLASS = "Render";
     private static final String IMAGE_WRITER_COMPONENT = "Image writer";
@@ -139,6 +143,11 @@ public class Camera {
      */
     public Camera setRayTracer(RayTracerBase rayTracer) {
         this.rayTracer = rayTracer;
+        return this;
+    }
+    public Camera setRayTracer(RayTracerBase rayTracer, boolean bvhNode) {
+        this.rayTracer = rayTracer;
+        this.rayTracer.setBvhNode();
         return this;
     }
 
@@ -277,6 +286,12 @@ public class Camera {
         return new Ray(pIJ, vIJ); // return a new ray from a pixel
     }
 
+
+    private void castRay(int nX, int nY, int col, int row){
+        imageWriter.writePixel(col, row, rayTracer.traceRay(constructRay(nX,  nY,  col,  row)));
+        pixelManager.pixelDone();
+    }
+
     /**
      * > The function iterates over all the pixels in the image and casts a ray through each pixel
      */
@@ -290,30 +305,22 @@ public class Camera {
         int nX = this.imageWriter.getNx();
         int nY = this.imageWriter.getNy();
 
-        Ray[][] rays = new Ray[nY][nX];
-        for (int row = 0; row < nY; row++) {
-            for (int col = 0; col < nX; col++) {
-                rays[row][col] = constructRay(nX, nY, col, row);
-            }
-        }
+        pixelManager = new PixelManager(nY, nX, 1);
+
 
         if (!splitToThreads) {
             // The row of the pixel in the image.
             for (int row = 0; row < nY; row++) {
                 // The column of the pixel in the image.
                 for (int col = 0; col < nX; col++) {
-                    Ray ray = rays[row][col];
-                    Color pixelColor = this.rayTracer.traceRay(ray);
-                    this.imageWriter.writePixel(col, row, pixelColor);
+                    castRay(nX, nY, col, row);
                 }
             }
         } else {
             //rendering image with using of threads
             IntStream.range(0, nY).parallel().forEach(row ->
                     IntStream.range(0, nX).parallel().forEach(col -> {
-                        Ray ray = rays[row][col];
-                        Color pixelColor = this.rayTracer.traceRay(ray);
-                        this.imageWriter.writePixel(col, row, pixelColor);
+                        castRay(nX, nY, col, row);
                     })
             );
         }

@@ -13,6 +13,7 @@ public class DofTests {
 
     Geometries geometries = new Geometries();
     Material material = new Material().setKs(0.7).setKd(0.4).setShininess(30);
+    Scene scene;
 
     void addWalles(Color color, Material material, Point...points){
         for(int i =0; i < 7; i=(i + 2)){
@@ -28,65 +29,8 @@ public class DofTests {
                 new Point(339.99, -100, -80),
                 new Point(339.99, -100, 0),
                 new Point(339.99, -300, 0),
-                new Point(339.99, -300, -80)).setEmission(new Color(GRAY))
+                new Point(339.99, -300, -80)).setEmission(new Color(100,100,100))
                 .setMaterial(new Material().setShininess(50).setKd(0.3).setKs(0.4).setKr(0.5)));
-    }
-
-    //creates all objects and returns the camera
-    Camera createAll(){
-        Color tableColor = new Color(217,148,98);
-
-        addWalles(new Color(200, 247, 219),
-                material,
-                new Point(-100, 200, -100),
-                new Point(-100, 200, 250),
-                new Point(340, 200, -100),
-                new Point(340, 200, 250),
-                new Point(340, -540, -100),
-                new Point(340, -540, 250),
-                new Point(-100, -540, -100),
-                new Point(-100, -540, 250));
-
-        addMirror();
-        createTablesAndChairs(new Point(-20, -400, -76.5));
-
-
-        // teacher table
-        geometries.add(new Polygon(
-                new Point(80, 70, -66.5),
-                new Point(160, 70, -66.5),
-                new Point(160, 130, -66.5),
-                new Point(80, 130, -66.5)).setEmission(tableColor).setMaterial(material));
-
-        //teacher table legs
-        createLegs(new Point(80, 70, -66.5),
-                new Point(152, 70, -66.5),
-                new Point(152, 124, -66.5),
-                new Point(80, 124, -66.5), 8, 6, 36, tableColor);
-
-        //ball
-        geometries.add(new Sphere(20,new Point(120, 100, -46.5))
-                .setEmission(new Color(234,63,247))
-                .setMaterial(new Material().setKd(0.3).setKt(0.4).setKs(0.4).setShininess(500)));
-
-
-        List<LightSource> list = new LinkedList<>();
-        list.add(new PointLight(new Color(122, 68, 41), new Point(240, -100, 40)));
-        list.add(new SpotLight(new Color(22, 68, 41), new Point(-100, -540, 50), new Vector(1,1,-1)));
-
-
-        final Scene scene = new Scene.SceneBuilder("DOF picture").setBackground(new Color(WHITE))
-                .setAmbientLight(new AmbientLight(new Color(BLACK), new Double3(0.15)))
-                .setLights(list)
-                .setGeometries(geometries).build();
-
-
-
-        final Camera camera = new Camera(new Point(-40,-510, 0), new Vector(0.6, 1,-0.6),new Vector(0.6, 1,1.36/0.6))
-                .setVPSize(400, 400).setVPDistance(300)
-                .setRayTracer(new RayTracerBasic(scene));
-
-        return camera;
     }
 
     //add tables and chairs
@@ -106,13 +50,67 @@ public class DofTests {
                 double x = myPointj.getCoordinate().getX();
                 double y = myPointj.getCoordinate().getY();
                 double z = myPointj.getCoordinate().getZ();
-                geometries.add(new Polygon(myPointj,new Point(x + 40, y, z), new Point(x + 40, y + 40, z), new Point(x, y + 40, z)).setEmission(new Color(217,148,98)).setMaterial(material));
+                geometries.add(new Polygon(myPointj,
+                        new Point(x + 40, y, z),
+                        new Point(x + 40, y + 40, z),
+                        new Point(x, y + 40, z))
+                        .setEmission(new Color(217,148,98))
+                        .setMaterial(material));
+                geometries.add(new Polygon(
+                        new Point(x, y, z+5),
+                        new Point(x + 40, y, z+5),
+                        new Point(x + 40, y + 40, z+5),
+                        new Point(x, y + 40, z+5))
+                        .setEmission(new Color(217,148,98))
+                        .setMaterial(material));
+                geometries.add(new Polygon(myPointj,
+                        new Point(x , y, z +5),
+                        new Point(x + 40, y , z + 5),
+                        new Point(x + 40, y, z))
+                        .setEmission(new Color(217,148,98))
+                        .setMaterial(material));
+                geometries.add(new Polygon(
+                        new Point(x, y+40, z),
+                        new Point(x, y+40, z+5),
+                        new Point(x + 40, y + 40, z + 5),
+                        new Point(x + 40, y + 40, z))
+                        .setEmission(new Color(217,148,98))
+                        .setMaterial(material));
+                geometries.add(new Polygon(
+                        new Point(x, y + 40, z),
+                        new Point(x, y + 40, z + 5),
+                        new Point(x, y, z + 5), myPointj)
+                        .setEmission(new Color(217,148,98))
+                        .setMaterial(material));
+                geometries.add(new Polygon(
+                        new Point(x + 40, y + 40, z),
+                        new Point(x + 40, y + 40, z + 5),
+                        new Point(x + 40, y, z + 5),
+                        new Point(x + 40, y, z))
+                        .setEmission(new Color(217,148,98))
+                        .setMaterial(material));
                 createLegs(myPointj, new Point(x + 36, y, z), new Point(x + 36, y + 36, z), new Point(x, y + 36, z),4,4,26,new Color(217,148,98));
 
-                geometries.add(new Polygon(new Point(x+10, y, z + 5), new Point(x+30, y, z+5), new Point(x+30, y,z-10), new Point(x+10, y, z-10)).setEmission(new Color(GRAY)));
-                geometries.add(new Polygon(new Point(x+10, y, z-10), new Point(x+10, y+15, z-10), new Point(x+30, y+15, z-10), new Point(x+30, y, z-10)).setEmission(new Color(GRAY)));
+                geometries.add(new Polygon(
+                        new Point(x+10, y - 0.01, z + 10),
+                        new Point(x+30, y - 0.01, z+10),
+                        new Point(x+30, y - 0.01,z-7.5),
+                        new Point(x+10, y - 0.01, z-7.5))
+                        .setEmission(new Color(GRAY)));
 
-                createLegs(new Point(x+10, y, z-10),  new Point(x+28, y,z-10),new Point(x+28, y+13.5, z-10),new Point(x+10, y +13.5, z-10),2,1.5,16, new Color(GRAY));
+                geometries.add(new Polygon(
+                        new Point(x+10, y - 0.01, z-7.5),
+                        new Point(x+10, y+15, z-7.5),
+                        new Point(x+30, y+15, z-7.5),
+                        new Point(x+30, y - 0.01, z-7.5))
+                        .setEmission(new Color(GRAY)));
+
+                createLegs(
+                        new Point(x+10, y, z-7.5),
+                        new Point(x+28, y,z-7.5),
+                        new Point(x+28, y+13.5, z-7.5)
+                        ,new Point(x+10, y +13.5, z-7.5),
+                        2,1.5,18.5, new Color(GRAY));
 
             }
         }
@@ -150,10 +148,121 @@ public class DofTests {
         }
     }
 
+    //creates all objects and returns the camera
+    void createAll(){
+        Color tableColor = new Color(217,148,98);
+
+        addWalles(new Color(200, 247, 219),
+                material,
+                new Point(-100, 200, -100),
+                new Point(-100, 200, 250),
+                new Point(340, 200, -100),
+                new Point(340, 200, 250),
+                new Point(340, -540, -100),
+                new Point(340, -540, 250),
+                new Point(-100, -540, -100),
+                new Point(-100, -540, 250));
+
+        addMirror();
+        createTablesAndChairs(new Point(-20, -400, -76.5));
+
+
+        // teacher table
+        geometries.add(new Polygon(
+                new Point(80, 70, -66.5),
+                new Point(160, 70, -66.5),
+                new Point(160, 130, -66.5),
+                new Point(80, 130, -66.5)).setEmission(tableColor).setMaterial(material));
+
+        geometries.add(new Polygon(
+                new Point(80, 70, -61.5),
+                new Point(160, 70, -61.5),
+                new Point(160, 130, -61.5),
+                new Point(80, 130, -61.5)).setEmission(tableColor).setMaterial(material));
+
+        geometries.add(new Polygon(
+                new Point(80, 70, -66.5),
+                new Point(80, 70, -61.5),
+                new Point(160, 70, -61.5),
+                new Point(160, 70, -66.5)).setEmission(tableColor).setMaterial(material));
+
+        geometries.add(new Polygon(
+                new Point(80, 130, -66.5),
+                new Point(80, 130, -61.5),
+                new Point(160, 130, -61.5),
+                new Point(160, 130, -66.5)).setEmission(tableColor).setMaterial(material));
+
+        geometries.add(new Polygon(
+                new Point(80, 70, -66.5),
+                new Point(80, 70, -61.5),
+                new Point(80, 130, -61.5),
+                new Point(80, 130, -66.5)).setEmission(tableColor).setMaterial(material));
+
+        geometries.add(new Polygon(
+                new Point(160, 70, -66.5),
+                new Point(160, 70, -61.5),
+                new Point(160, 130, -61.5),
+                new Point(160, 130, -66.5)).setEmission(tableColor).setMaterial(material));
+
+        //teacher table legs
+        createLegs(new Point(80, 70, -66.5),
+                new Point(152, 70, -66.5),
+                new Point(152, 124, -66.5),
+                new Point(80, 124, -66.5), 8, 6, 36, tableColor);
+
+        //teacher chair
+        geometries.add(new Polygon(
+                new Point(105, 130.01, -54.5),
+                new Point(135, 130.01, -54.5),
+                new Point(135, 130.01, -80),
+                new Point(105, 130.01, -80)).setEmission(new Color(GRAY)).setMaterial(material));
+        geometries.add(new Polygon(
+                new Point(105, 130.01, -80),
+                new Point(135, 130.01, -80),
+                new Point(135, 110, -80),
+                new Point(105, 110, -80)).setEmission(new Color(GRAY)).setMaterial(material));
+        createLegs(new Point(105, 110, -80),
+                new Point(132, 110, -80),
+                new Point(132, 128.01, -80),
+                new Point(105, 128.01, -80),
+                3, 2, 20, new Color(GRAY));
+
+        //ball
+        geometries.add(new Sphere(10,new Point(80, -240, -61.5))
+                .setEmission(new Color(234,63,247))
+                .setMaterial(new Material().setKd(0.3).setKt(0.5).setKs(0.4).setShininess(500)));
+        geometries.add(new Sphere(20,new Point(112, 100, -41.5))
+                .setEmission(new Color(234,63,247))
+                .setMaterial(new Material().setKd(0.3).setKt(0.5).setKs(0.4).setShininess(500)));
+
+
+
+        List<LightSource> lightList = new LinkedList<>();
+        lightList.add(new PointLight(new Color(122, 68, 41), new Point(240, -100, 40)));
+        lightList.add(new SpotLight(new Color(22, 68, 41), new Point(-100, -540, 50), new Vector(1,1,-1)));
+        lightList.add(new DirectionalLight(new Color(255,254,145), new Vector(0,0,-1)));
+        for(int i = 0; i < 3; ++i){
+            lightList.add(new SpotLight( new Color(28, 64, 17), new Point(-80 + 130 * i, -539.99, -80), new Vector(-0.2, 1, 0)));
+        }
+
+
+        scene = new Scene.SceneBuilder("DOF picture").setBackground(new Color(WHITE))
+                .setAmbientLight(new AmbientLight(new Color(BLACK), new Double3(0.15)))
+                .setLights(lightList)
+                .setGeometries(geometries).build();
+    }
+
+    Camera createCamera()
+    {
+        return new Camera(new Point(-40,-510, 0), new Vector(0.6, 1,-0.6),new Vector(0.6, 1,1.36/0.6))
+                .setVPSize(400, 400).setVPDistance(300)
+                .setRayTracer(new RayTracerBasic(scene));
+    }
     @Test
     void withoutDofTest(){
-        Camera camera = createAll();
-        camera.setImageWriter(new ImageWriter("without dof", 2000, 2000)) //
+        createAll();
+        Camera camera = createCamera();
+        camera.setImageWriter(new ImageWriter("without dof", 500, 500)) //
                 .renderImage() //
                 .writeToImage();
 
@@ -161,13 +270,15 @@ public class DofTests {
 
     @Test
     void withDofTest(){
-        Camera camera = createAll();
-        double dof = camera.getDofByPoint(new Point(120,  100, -46.5));
+        createAll();
+        Camera camera = createCamera();
+        double dof = camera.getDofByPoint(new Point(80, -240, -61.5));
         camera.setGridParams(6)
-                .setAperture(5)
+                .setAperture(7.5)
                 .setDepthOfField(dof)
-                .setImageWriter(new ImageWriter("with dof", 1000, 1000))
+                .setImageWriter(new ImageWriter("with dof", 400, 400))
                 .renderImageWithDepthOfField()
                 .writeToImage();
     }
+
 }

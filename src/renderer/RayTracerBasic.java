@@ -1,11 +1,15 @@
 package renderer;
+import geometries.Geometries;
+import geometries.Intersectable;
 import geometries.Intersectable.GeoPoint;
 import lighting.LightSource;
 import primitives.*;
 import scene.Scene;
 
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static primitives.Util.alignZero;
 
@@ -28,6 +32,10 @@ public class RayTracerBasic extends RayTracerBase {
      */
     private static final Double3 INITIAL_K = Double3.ONE;
 
+    BVHNode bvhNode = null;
+
+    Geometries bigGeometries = new Geometries();
+
 
     /**
      * Constructor for RayTracerBasic
@@ -36,6 +44,28 @@ public class RayTracerBasic extends RayTracerBase {
      */
     public RayTracerBasic(Scene scene) {
         super(scene);
+    }
+
+    public void setBvhNode(){
+//        Map<Intersectable, AABB>map = new HashMap<>();
+//        int c = 0;
+//        double averageSize = 0;
+//        for (Intersectable intersectable: scene.geometries.getItems()) {
+//            map.put(intersectable, new AABB(intersectable));
+//           averageSize += map.get(intersectable).size();
+//           c += 1;
+//        }
+//        averageSize /= c;
+//
+//        Geometries geometries = new Geometries();
+//        for (Intersectable intersectable: scene.geometries.getItems()) {
+//            if(map.get(intersectable).size() - 10 <= averageSize)
+//                geometries.add(intersectable);
+//            else
+//                bigGeometries.add(intersectable);
+//        }
+//        bvhNode = BVHNode.buildBVH(geometries.getItems());
+        bvhNode = BVHNode.buildBVH(scene.geometries.getItems());
     }
 
     /**
@@ -50,35 +80,6 @@ public class RayTracerBasic extends RayTracerBase {
         return closestPoint == null ? scene.background : calcColor(closestPoint, ray);
     }
 
-    /**
-     * The function checks returns if the point is unshaded or shaded.
-     *
-     * @param gp          The point on the geometry that we're shading
-     * @param lightSource The light source that we're checking if it's shaded or not.
-     * @param l           The vector from the point to the light source
-     * @param n           the normal vector of the point
-     * @return true if the point is unshaded, and false if it is shaded.
-     */
-    private boolean unshaded(GeoPoint gp, LightSource lightSource, Vector l, Vector n) {
-        Point point = gp.point;
-        Vector lightDirection = l.scale(-1); // from point to light source
-        Ray lightRay = new Ray(point, n, lightDirection);
-
-        // Calculates the maximum distance from the ray to the surface
-        double maxDistance = lightSource.getDistance(point);
-
-        // Get the intersections
-        List<GeoPoint> intersections = scene.geometries.findGeoIntersections(lightRay, maxDistance);
-
-        if (intersections == null)
-            return true;
-
-        for (var intersection: intersections) {
-            if(intersection.geometry.getMaterial().kT.lowerThan(MIN_CALC_COLOR_K))
-                return false;
-        }
-        return true;
-    }
 
     /**
      * It calculates the color of a point on a surface, by calculating the color of the point, and adding the ambient light
@@ -156,7 +157,23 @@ public class RayTracerBasic extends RayTracerBase {
      * @return The closest intersection point.
      */
     private GeoPoint findClosestIntersection(Ray ray) {
-        List<GeoPoint> intersections = scene.geometries.findGeoIntersections(ray);
+        List<GeoPoint> intersections;
+        if(bvhNode != null) {
+            Point p0 = ray.getP0();
+            Vector dir = ray.getDir();
+            double px = p0.getCoordinate().getX();
+            double py = p0.getCoordinate().getY();
+            double pz = p0.getCoordinate().getZ();
+            double vx = dir.getCoordinate().getX();
+            double vy = dir.getCoordinate().getY();
+            double vz = dir.getCoordinate().getZ();
+            Geometries geometries = BVHNode.intersectBVH(bvhNode, px, py, pz, vx, vy, vz);
+            intersections = geometries.findGeoIntersections(ray);
+        }
+        else {
+            intersections = scene.geometries.findGeoIntersections(ray);
+        }
+
         if(intersections == null)
             return null;
         return ray.findClosestGeoPoint(intersections); //returns closest point
@@ -222,7 +239,6 @@ public class RayTracerBasic extends RayTracerBase {
             Vector l = lightSource.getL(gp.point);
             double nl = alignZero(n.dotProduct(l));
             if (nl * nv > 0) { // sign(nl) == sing(nv)
-                if (unshaded(gp, lightSource, l, n)) {
                 Double3 ktr = transparency(gp,lightSource, l, n);
                 if (!ktr.product(k).lowerThan(MIN_CALC_COLOR_K) ) {
                     Color iL = lightSource.getIntensity(gp.point).scale(ktr);
@@ -232,7 +248,7 @@ public class RayTracerBasic extends RayTracerBase {
                     }
                 }
             }
-        }
+
 
         return color;
     }
