@@ -126,14 +126,7 @@ public class RayTracerBasic extends RayTracerBase {
      * @return The closest intersection point.
      */
     private GeoPoint findClosestIntersection(Ray ray) {
-        //List<GeoPoint> intersections;
-//        if(bvhNode != null) {
-//            Geometries geometries = BVHNode.intersectBVH(bvhNode, px, py, pz, vx, vy, vz);
-//            intersections = geometries.findGeoIntersections(ray);
-//        }
-//        else {
         List<GeoPoint> intersections = scene.geometries.findGeoIntersections(ray);
-//        }
 
         if(intersections == null)
             return null;
@@ -199,7 +192,7 @@ public class RayTracerBasic extends RayTracerBase {
         for (LightSource lightSource : scene.lights) {
             Vector l = lightSource.getL(gp.point);
             double nl = alignZero(n.dotProduct(l));
-            if (nl * nv > 0) { // sign(nl) == sing(nv)
+            if (nl * nv > 0) { // sign(nl) == sign(nv)
                 Double3 ktr = transparency(gp,lightSource, l, n);
                 if (!ktr.product(k).lowerThan(MIN_CALC_COLOR_K) ) {
                     Color iL = lightSource.getIntensity(gp.point).scale(ktr);
@@ -209,8 +202,6 @@ public class RayTracerBasic extends RayTracerBase {
                     }
                 }
             }
-
-
         return color;
     }
 

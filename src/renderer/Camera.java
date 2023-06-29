@@ -169,6 +169,12 @@ public class Camera {
         return this;
     }
 
+    /**
+     * Calculates the degree of freedom (dof) for a given point in a three-dimensional space.
+     *
+     * @param point The point for which to calculate the dof.
+     * @return The dof value for the given point.
+     */
     public double getDofByPoint(Point point){
         Point vpCenterPoint = p0.add(vTo.scale(distance));
         Vector v = point.subtract(p0);
@@ -195,25 +201,110 @@ public class Camera {
      */
     public Ray constructRay(int nX, int nY, int j, int i) {
         // Ratio (pixel width & height)
-        double rY = (double) this.height / nY;
-        double rX = (double) this.height / nX;
+        double rY = (double) height / nY;
+        double rX = (double) width / nX;
 
         // Image center
 
         // Pixel[i,j] center
-        Point Pij = this.p0.add(this.vTo.scale(this.distance));
+        Point Pij = p0.add(vTo.scale(distance));
 
         double yI = -(i - ((nY - 1) / 2d)) * rY;
         double xJ = (j - ((nX - 1) / 2d)) * rX;
 
         // move to middle of pixel i,j
         if (!isZero(xJ))
-            Pij = Pij.add(this.vRight.scale(xJ));
+            Pij = Pij.add(vRight.scale(xJ));
         if (!isZero(yI))
-            Pij = Pij.add(this.vUp.scale(yI));
+            Pij = Pij.add(vUp.scale(yI));
 
         // return ray from camera to viewPlane coordinate (i, j)
-        return new Ray(this.p0, Pij.subtract(this.p0));
+        return new Ray(p0, Pij.subtract(p0));
+    }
+
+    /**
+     * Casts a ray for a specific pixel in the image and writes the resulting color to the image.
+     *
+     * @param nX   The x-coordinate of the pixel in the image.
+     * @param nY   The y-coordinate of the pixel in the image.
+     * @param col  The column index of the pixel in the image.
+     * @param row  The row index of the pixel in the image.
+     */
+    private void castRay(int nX, int nY, int col, int row){
+        imageWriter.writePixel(col, row, rayTracer.traceRay(constructRay(nX,  nY,  col,  row)));
+        pixelManager.pixelDone();
+    }
+
+    /**
+     * > The function iterates over all the pixels in the image and casts a ray through each pixel
+     */
+    public Camera renderImage() {
+        // Checks that imageWriter and rayTracer fields isn't empty
+        if (this.imageWriter == null)
+            throw new MissingResourceException(RESOURCE_ERROR, RENDER_CLASS, IMAGE_WRITER_COMPONENT);
+        if (this.rayTracer == null)
+            throw new MissingResourceException(RESOURCE_ERROR, RENDER_CLASS, RAY_TRACER_COMPONENT);
+        // Rendering the image
+        int nX = this.imageWriter.getNx();
+        int nY = this.imageWriter.getNy();
+
+        pixelManager = new PixelManager(nY, nX, 1);
+        PixelManager.Pixel pixel;
+
+
+        if (!splitToThreads) {
+            for (;(pixel = pixelManager.nextPixel())!= null; pixelManager.pixelDone())
+                    castRay(nX, nY, pixel.col(), pixel.row());
+        }
+        else {
+            //rendering image with using of threads
+            IntStream.range(0, nY).parallel().forEach(row ->
+                    IntStream.range(0, nX).parallel().forEach(col -> castRay(nX, nY, col, row)));
+        }
+        return this;
+    }
+
+    /**
+     * Render the image with implementation of the depth of field
+     */
+    public Camera renderImageWithDepthOfField() {
+        if (imageWriter == null)
+            throw new MissingResourceException("You need to enter a image writer", ImageWriter.class.getName(), "");
+        if (rayTracer == null)
+            throw new MissingResourceException("You need to enter a ray tracer", RayTracerBase.class.getName(), "");
+
+        int nX = this.imageWriter.getNx();
+        int nY = this.imageWriter.getNy();
+        pixelManager = new PixelManager(nY, nX, 1);
+        PixelManager.Pixel pixel;
+
+
+        if (!splitToThreads) {
+            for (;(pixel = pixelManager.nextPixel())!= null; pixelManager.pixelDone()){
+                    Ray myRay = constructRay(nX, nY, pixel.col(), pixel.row());
+                    List<Ray> myRays = constructRaysGridFromCamera(n, myRay);
+                    Color myColor = new Color(0, 0, 0);
+                    for (Ray ray : myRays) { // we pass in the list myRays and for each ray we found his color
+                        myColor = myColor.add(rayTracer.traceRay(ray)); // we add the color of each ray to myColor
+                    }
+                    imageWriter.writePixel(pixel.col(), pixel.row(), myColor.reduce(myRays.size())); // we reduce myColor with the size of my list (number of rays)
+            }
+        }
+        else {
+            //rendering image with using of threads
+            IntStream.range(0, nY).parallel().forEach(row ->
+                    IntStream.range(0, nX).parallel().forEach(col -> {
+                        Ray myRay = constructRay(nX, nY, col, row);
+                        List<Ray> myRays = constructRaysGridFromCamera(n, myRay);
+                        Color myColor = new Color(0, 0, 0);
+                        for (Ray ray : myRays) { // we pass in the list myRays and for each ray we found his color
+                            myColor = myColor.add(rayTracer.traceRay(ray)); // we add the color of each ray to myColor
+                        }
+                        imageWriter.writePixel(col, row, myColor.reduce(myRays.size())); // we reduce myColor with the size of my list (number of rays)
+                    })
+            );
+        }
+        return this;
     }
 
     /**
@@ -279,88 +370,6 @@ public class Camera {
         Vector vIJ = focusPoint.subtract(pIJ);
 
         return new Ray(pIJ, vIJ); // return a new ray from a pixel
-    }
-
-
-    private void castRay(int nX, int nY, int col, int row){
-        imageWriter.writePixel(col, row, rayTracer.traceRay(constructRay(nX,  nY,  col,  row)));
-        pixelManager.pixelDone();
-    }
-
-    /**
-     * > The function iterates over all the pixels in the image and casts a ray through each pixel
-     */
-    public Camera renderImage() {
-        // Checks that imageWriter and rayTracer fields isn't empty
-        if (this.imageWriter == null)
-            throw new MissingResourceException(RESOURCE_ERROR, RENDER_CLASS, IMAGE_WRITER_COMPONENT);
-        if (this.rayTracer == null)
-            throw new MissingResourceException(RESOURCE_ERROR, RENDER_CLASS, RAY_TRACER_COMPONENT);
-        // Rendering the image
-        int nX = this.imageWriter.getNx();
-        int nY = this.imageWriter.getNy();
-
-        pixelManager = new PixelManager(nY, nX, 1);
-
-
-        if (!splitToThreads) {
-            // The row of the pixel in the image.
-            for (int row = 0; row < nY; row++) {
-                // The column of the pixel in the image.
-                for (int col = 0; col < nX; col++) {
-                    castRay(nX, nY, col, row);
-                }
-            }
-        } else {
-            //rendering image with using of threads
-            IntStream.range(0, nY).parallel().forEach(row ->
-                    IntStream.range(0, nX).parallel().forEach(col -> {
-                        castRay(nX, nY, col, row);
-                    })
-            );
-        }
-        return this;
-    }
-
-    /**
-     * Render the image with implementation of the depth of field
-     */
-    public Camera renderImageWithDepthOfField() {
-        if (imageWriter == null)
-            throw new MissingResourceException("You need to enter a image writer", ImageWriter.class.getName(), "");
-        if (rayTracer == null)
-            throw new MissingResourceException("You need to enter a ray tracer", RayTracerBase.class.getName(), "");
-
-        int nX = this.imageWriter.getNx();
-        int nY = this.imageWriter.getNy();
-        if(!splitToThreads) {
-            for (int row = 0; row < nY; row++) {
-                for (int col = 0; col < nX; col++) {
-                    Ray myRay = constructRay(nX, nY, col, row);
-                    List<Ray> myRays = constructRaysGridFromCamera(n, myRay);
-                    Color myColor = new Color(0, 0, 0);
-                    for (Ray ray : myRays) { // we pass in the list myRays and for each ray we found his color
-                        myColor = myColor.add(rayTracer.traceRay(ray)); // we add the color of each ray to myColor
-                    }
-                    imageWriter.writePixel(col, row, myColor.reduce(myRays.size())); // we reduce myColor with the size of my list (number of rays)
-                }
-            }
-        }
-        else {
-            //rendering image with using of threads
-            IntStream.range(0, nY).parallel().forEach(row ->
-                    IntStream.range(0, nX).parallel().forEach(col -> {
-                        Ray myRay = constructRay(nX, nY, col, row);
-                        List<Ray> myRays = constructRaysGridFromCamera(n, myRay);
-                        Color myColor = new Color(0, 0, 0);
-                        for (Ray ray : myRays) { // we pass in the list myRays and for each ray we found his color
-                            myColor = myColor.add(rayTracer.traceRay(ray)); // we add the color of each ray to myColor
-                        }
-                        imageWriter.writePixel(col, row, myColor.reduce(myRays.size())); // we reduce myColor with the size of my list (number of rays)
-                    })
-            );
-        }
-        return this;
     }
 
     /**
