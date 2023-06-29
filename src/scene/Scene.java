@@ -19,7 +19,7 @@ public class Scene {
     public final Color background;
     public final AmbientLight ambientLight;
 
-    public final Geometries geometries;
+    public Geometries geometries;
 
     public List<LightSource> lights;
 

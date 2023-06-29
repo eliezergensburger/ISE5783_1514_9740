@@ -74,7 +74,7 @@ public class OurPictureTest {
                     //new PointLight(new Color(234,63,247), new Point(0,0,-95)),
                     new SpotLight(new Color(115,251,253), new Point(0,0,0), new Vector(0,0,-1))
             ))
-            .setGeometries(new Geometries(mirror,table1, ball1, ball2,leg1_1,leg1_2,leg1_3,leg1_4,leg2_1,leg2_2,leg2_3,leg2_4,leg3_1,leg3_2,leg3_3,leg3_4,leg4_1,leg4_2,leg4_3,leg4_4)).build();
+            .setGeometries(new Geometries(List.of(mirror,table1, ball1, ball2,leg1_1,leg1_2,leg1_3,leg1_4,leg2_1,leg2_2,leg2_3,leg2_4,leg3_1,leg3_2,leg3_3,leg3_4,leg4_1,leg4_2,leg4_3,leg4_4))).build();
 
 
 

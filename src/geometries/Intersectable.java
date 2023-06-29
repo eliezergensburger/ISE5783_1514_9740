@@ -2,6 +2,7 @@ package geometries;
 
 import primitives.Point;
 import primitives.Ray;
+import primitives.Vector;
 
 import java.util.List;
 import java.util.Objects;
@@ -12,6 +13,9 @@ import java.util.Objects;
  *  @author Israel JAcob & Avraham Meiri
  */
 public abstract class Intersectable {
+    protected boolean bvhIsOn = false;  //a field to turn on and off the bvh
+
+    public BoundingBox box; //Boundary box
 
     /**
      * This class represent geometric body and point in it.
@@ -20,6 +24,7 @@ public abstract class Intersectable {
 
         public final Geometry geometry;
         public final Point point;
+
 
         /**
 
@@ -50,6 +55,15 @@ public abstract class Intersectable {
 
 
     /**
+     * @param b boolean value for bvh
+     * @return this (using builder pattern)
+     */
+    public void setBvhIsOn(boolean b) {
+        if (!bvhIsOn && b)//no box has been created
+            createBoundingBox();
+        bvhIsOn=b;
+    }
+    /**
      * Returns all the intersections of ray with geometry shape
      *
      * @param ray {@link Ray} pointing toward the object
@@ -71,6 +85,8 @@ public abstract class Intersectable {
      * @return A list of GeoPoints.
      */
     public List<GeoPoint> findGeoIntersections(Ray ray){
+        if (bvhIsOn && ! isIntersectingBoundingBox(ray))    //We'll only calculate intersections if it intersects bounding box
+            return null;
         return findGeoIntersectionsHelper(ray);
     }
 
@@ -103,5 +119,71 @@ public abstract class Intersectable {
      * @return A list of GeoPoints that are the intersections of the ray with the object.
      */
     protected abstract List<GeoPoint> findGeoIntersectionsHelper(Ray ray, double maxDistance);
+
+    /**
+     * class representing boundary box
+     */
+    public static class BoundingBox {
+        public Point minimums;  //Borders of box
+        public Point maximums;  //Box borders
+
+        public BoundingBox(Point mins, Point maxs) {
+            minimums = mins;
+            maximums = maxs;
+        }
+
+    }
+    /**
+     * Creates bounding box for objects
+     */
+    public abstract void createBoundingBox();
+
+    /**
+     * Testing if ray intersects
+     *
+     * @param ray ray to check
+     * @return Whether ray intersects box
+     * Code taken from scratchapixel.com
+      */
+    public boolean isIntersectingBoundingBox(Ray ray) {
+        if (!bvhIsOn || box == null)    //Intersect as usual
+            return true;
+        Vector dir = ray.getDir();
+        Point p0 = ray.getP0();
+        double tMin = (box.minimums.getCoordinate().getX() - p0.getCoordinate().getX()) / dir.getCoordinate().getX();
+        double tMax = (box.maximums.getCoordinate().getX() - p0.getCoordinate().getX()) / dir.getCoordinate().getX();
+        if (tMin > tMax) {
+            double temp = tMin;
+            tMin = tMax;
+            tMax = temp;
+        }
+        double tyMin = (box.minimums.getCoordinate().getY() - p0.getCoordinate().getY()) / dir.getCoordinate().getY();
+        double tyMax = (box.maximums.getCoordinate().getY() - p0.getCoordinate().getY()) / dir.getCoordinate().getY();
+        if (tyMin > tyMax) {    //Swapping if the bottom is larget than the top
+            double temp = tyMin;
+            tyMin = tyMax;
+            tyMax = temp;
+        }
+        if ((tMin > tyMax) || (tyMin > tMax))
+            return false;
+        if (tyMin > tMin)
+            tMin = tyMin;
+        if (tyMax < tMax)
+            tMax = tyMax;
+        double tzMin = (box.minimums.getCoordinate().getZ() - p0.getCoordinate().getZ()) / dir.getCoordinate().getZ();
+        double tzMax = (box.maximums.getCoordinate().getZ() - p0.getCoordinate().getZ()) / dir.getCoordinate().getZ();
+        if (tzMin > tzMax) {
+            double temp = tzMin;
+            tzMin = tzMax;
+            tzMax = temp;
+        }
+        if ((tMin > tzMax) || (tzMin > tMax))
+            return false;
+        if (tzMin > tMin)
+            tMin = tzMin;
+        if (tzMax < tMax)
+            tMax = tzMax;
+        return true;
+    }
 
 }

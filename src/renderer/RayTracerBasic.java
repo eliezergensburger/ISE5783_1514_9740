@@ -1,15 +1,11 @@
 package renderer;
-import geometries.Geometries;
-import geometries.Intersectable;
 import geometries.Intersectable.GeoPoint;
 import lighting.LightSource;
 import primitives.*;
 import scene.Scene;
 
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import static primitives.Util.alignZero;
 
@@ -32,11 +28,6 @@ public class RayTracerBasic extends RayTracerBase {
      */
     private static final Double3 INITIAL_K = Double3.ONE;
 
-    BVHNode bvhNode = null;
-
-    Geometries bigGeometries = new Geometries();
-
-
     /**
      * Constructor for RayTracerBasic
      *
@@ -44,28 +35,6 @@ public class RayTracerBasic extends RayTracerBase {
      */
     public RayTracerBasic(Scene scene) {
         super(scene);
-    }
-
-    public void setBvhNode(){
-//        Map<Intersectable, AABB>map = new HashMap<>();
-//        int c = 0;
-//        double averageSize = 0;
-//        for (Intersectable intersectable: scene.geometries.getItems()) {
-//            map.put(intersectable, new AABB(intersectable));
-//           averageSize += map.get(intersectable).size();
-//           c += 1;
-//        }
-//        averageSize /= c;
-//
-//        Geometries geometries = new Geometries();
-//        for (Intersectable intersectable: scene.geometries.getItems()) {
-//            if(map.get(intersectable).size() - 10 <= averageSize)
-//                geometries.add(intersectable);
-//            else
-//                bigGeometries.add(intersectable);
-//        }
-//        bvhNode = BVHNode.buildBVH(geometries.getItems());
-        bvhNode = BVHNode.buildBVH(scene.geometries.getItems());
     }
 
     /**
@@ -157,22 +126,14 @@ public class RayTracerBasic extends RayTracerBase {
      * @return The closest intersection point.
      */
     private GeoPoint findClosestIntersection(Ray ray) {
-        List<GeoPoint> intersections;
-        if(bvhNode != null) {
-            Point p0 = ray.getP0();
-            Vector dir = ray.getDir();
-            double px = p0.getCoordinate().getX();
-            double py = p0.getCoordinate().getY();
-            double pz = p0.getCoordinate().getZ();
-            double vx = dir.getCoordinate().getX();
-            double vy = dir.getCoordinate().getY();
-            double vz = dir.getCoordinate().getZ();
-            Geometries geometries = BVHNode.intersectBVH(bvhNode, px, py, pz, vx, vy, vz);
-            intersections = geometries.findGeoIntersections(ray);
-        }
-        else {
-            intersections = scene.geometries.findGeoIntersections(ray);
-        }
+        //List<GeoPoint> intersections;
+//        if(bvhNode != null) {
+//            Geometries geometries = BVHNode.intersectBVH(bvhNode, px, py, pz, vx, vy, vz);
+//            intersections = geometries.findGeoIntersections(ray);
+//        }
+//        else {
+        List<GeoPoint> intersections = scene.geometries.findGeoIntersections(ray);
+//        }
 
         if(intersections == null)
             return null;

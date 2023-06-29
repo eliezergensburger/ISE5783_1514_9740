@@ -145,11 +145,6 @@ public class Camera {
         this.rayTracer = rayTracer;
         return this;
     }
-    public Camera setRayTracer(RayTracerBase rayTracer, boolean bvhNode) {
-        this.rayTracer = rayTracer;
-        this.rayTracer.setBvhNode();
-        return this;
-    }
 
     public double getDepthOfField() {
         return depthOfField;

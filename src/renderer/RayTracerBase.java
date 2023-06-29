@@ -27,5 +27,4 @@ public abstract class RayTracerBase {
      * @return A color object.
      */
     abstract Color traceRay(Ray ray);
-    abstract void setBvhNode();
 }

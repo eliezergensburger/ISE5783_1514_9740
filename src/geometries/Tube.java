@@ -2,7 +2,6 @@ package geometries;
 
 import primitives.Point;
 import primitives.Ray;
-import primitives.Util;
 import primitives.Vector;
 
 import java.util.List;
@@ -114,6 +113,11 @@ public class Tube extends RadialGeometry {
         if (t2 > 0) return List.of(new GeoPoint(this, ray.getPoint(t2)));
 
         return null; //if there are no positive solutions
+    }
+
+    @Override
+    public void createBoundingBox() {
+
     }
 
     /**

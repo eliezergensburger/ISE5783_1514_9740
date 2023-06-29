@@ -5,6 +5,8 @@ import primitives.Point;
 import primitives.Ray;
 import primitives.Vector;
 
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 class GeometriesTests {
@@ -28,7 +30,7 @@ class GeometriesTests {
         Sphere s3 = new Sphere(1, new Point(2,1,2));
 
         //Triangle t = new Triangle(new Point(0,0,0),new Point(1,1,1),new Point(4,5,6));
-        Geometries g = new Geometries(p1,p2,s1,s2);
+        Geometries g = new Geometries(List.of(p1,p2,s1,s2));
 
         //tc11: empty List of shapes.
         assertNull(new Geometries().findIntersections(r1), "tc11: empty List of shapes.");
@@ -39,7 +41,7 @@ class GeometriesTests {
         //tc14: sum of the shapes intersects and some don't.
         assertEquals(3, g.findIntersections(r3).size(), "tc14: sum of the shapes intersects and some don't");
         //tc15: all shapes intersects in scene.
-        assertEquals(3, new Geometries(p1,s3,p2).findIntersections(r4).size(), "tc15: all shapes intersects in scene");
+        assertEquals(3, new Geometries(List.of(p1,s3,p2)).findIntersections(r4).size(), "tc15: all shapes intersects in scene");
 
     }
 }

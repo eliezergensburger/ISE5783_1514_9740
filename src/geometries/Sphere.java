@@ -22,10 +22,8 @@ public class Sphere extends RadialGeometry{
     public Sphere(double radius, Point center) {
         super(radius);
         this.center = center;
-    }
-
-    public Point getCenter() {
-        return center;
+        if (bvhIsOn)
+            createBoundingBox();
     }
 
     /**
@@ -126,5 +124,16 @@ public class Sphere extends RadialGeometry{
             return List.of(new GeoPoint(this, ray.getPoint(t2)));
 
         return null; // no intersections at all
+    }
+
+    @Override
+    public void createBoundingBox() {
+        double minX = center.getCoordinate().getX() - radius;
+        double minY = center.getCoordinate().getY() - radius;
+        double minZ = center.getCoordinate().getZ() - radius;
+        double maxX = center.getCoordinate().getX() + radius;
+        double maxY = center.getCoordinate().getY() + radius;
+        double maxZ = center.getCoordinate().getZ() + radius;
+        box = new BoundingBox(new Point(minX, minY, minZ), new Point(maxX, maxY, maxZ));
     }
 }

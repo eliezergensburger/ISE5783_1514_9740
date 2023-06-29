@@ -1,7 +1,9 @@
 package renderer;
 
+import geometries.Geometries;
 import org.junit.jupiter.api.Test;
 import primitives.*;
+import geometries.Intersectable;
 
 public class ImproveRunTimeTests {
     DofTests myTest = new DofTests();
@@ -68,7 +70,12 @@ public class ImproveRunTimeTests {
         long endTime1 = System.currentTimeMillis();
         System.out.println("without BVH took " + (endTime1 - startTime1) + " mile seconds\n");
 
-        Camera camera2 = myTest.createCamera().setRayTracer(new RayTracerBasic(myTest.scene), true);
+
+        for (Intersectable intersectable :myTest.scene.geometries.getItems()) {
+            intersectable.setBvhIsOn(true);
+        }
+        myTest.scene.geometries = Geometries.buildBVH(myTest.scene.geometries);
+        Camera camera2 = myTest.createCamera();
 
         // without dof
         long startTime2 =  System.currentTimeMillis();
@@ -109,7 +116,11 @@ public class ImproveRunTimeTests {
         long endTime1 = System.currentTimeMillis();
         System.out.println("without BVH and multithreading took " + (endTime1 - startTime1) + " mile seconds\n");
 
-        Camera camera2 = myTest.createCamera().setRayTracer(new RayTracerBasic(myTest.scene), true).setMultithreading(true);
+        for (Intersectable intersectable :myTest.scene.geometries.getItems()) {
+            intersectable.setBvhIsOn(true);
+        }
+        myTest.scene.geometries = Geometries.buildBVH(myTest.scene.geometries);
+        Camera camera2 = myTest.createCamera().setMultithreading(true);
 
         // without dof
         long startTime2 =  System.currentTimeMillis();

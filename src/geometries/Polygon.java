@@ -43,7 +43,8 @@ public class Polygon extends Geometry {
             throw new IllegalArgumentException("A polygon can't have less than 3 vertices");
         this.vertices = List.of(vertices);
         size          = vertices.length;
-
+        if (bvhIsOn)
+            createBoundingBox();
         // Generate the plane according to the first three vertices and associate the
         // polygon with this plane.
         // The plane holds the invariant normal (orthogonal unit) vector to the polygon
@@ -78,9 +79,6 @@ public class Polygon extends Geometry {
         }
     }
 
-    public List<Point> getVertices() {
-        return vertices;
-    }
 
     @Override
     public Vector getNormal(Point point) { return plane.getNormal(); }
@@ -171,5 +169,26 @@ public class Polygon extends Geometry {
         }
 
         return List.of(new GeoPoint(this, intersections.get(0).point));
+    }
+
+    @Override
+    public void createBoundingBox() {
+        if (vertices == null)
+            return;
+        double minX = Double.POSITIVE_INFINITY;
+        double minY = Double.POSITIVE_INFINITY;
+        double minZ = Double.POSITIVE_INFINITY;
+        double maxX = Double.NEGATIVE_INFINITY;
+        double maxY = Double.NEGATIVE_INFINITY;
+        double maxZ = Double.NEGATIVE_INFINITY;
+        for (Point ver : vertices) {
+            minX = Math.min(minX, ver.getCoordinate().getX());
+            minY = Math.min(minY, ver.getCoordinate().getY());
+            minZ = Math.min(minZ, ver.getCoordinate().getZ());
+            maxX = Math.max(maxX, ver.getCoordinate().getX());
+            maxY = Math.max(maxY, ver.getCoordinate().getY());
+            maxZ = Math.max(maxZ, ver.getCoordinate().getZ());
+        }
+        box = new BoundingBox(new Point(minX, minY, minZ), new Point(maxX, maxY, maxZ));
     }
 }

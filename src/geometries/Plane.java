@@ -146,4 +146,9 @@ public class Plane extends Geometry {
         // return immutable List
         return List.of(new GeoPoint(this, ray.getPoint(t)));
     }
+
+    @Override
+    public void createBoundingBox() {
+        box = null;
+    }
 }
