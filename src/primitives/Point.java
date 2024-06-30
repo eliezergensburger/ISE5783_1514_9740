@@ -12,6 +12,7 @@ public class Point {
      * The coordinate
      */
     final Double3 coordinate;
+
     /**
      * Constructs a Point object with the specified x, y, and z coordinates.
      *

@@ -62,6 +62,7 @@ class PixelManager {
      * by different threads
      */
     private Object mutexPixels = new Object();
+
     /**
      * Initialize pixel manager data for multi-threading
      *

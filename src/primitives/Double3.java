@@ -31,6 +31,7 @@ public class Double3 {
      * Third number
      */
     final double d3;
+
     /**
      * Constructor to initialize Double3 based object with its three number values
      *
