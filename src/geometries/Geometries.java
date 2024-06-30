@@ -9,7 +9,7 @@ import java.util.List;
 
 public class Geometries extends Intersectable {
 
-    private final List<Intersectable> items ;
+    private final List<Intersectable> items;
 
     BoundingBox box = null;
     Geometries left = null;
@@ -24,30 +24,18 @@ public class Geometries extends Intersectable {
         items = new LinkedList<>();
     }
 
-    public Geometries(List<Intersectable> geometries){
+    public Geometries(List<Intersectable> geometries) {
         if (bvhIsOn)
             createBoundingBox();
         items = geometries;
     }
 
-    public List<Intersectable> getItems(){
-        return items;
-    }
-    public void add(Intersectable... geometries){
-        if (bvhIsOn)
-            createBoundingBox();
-        items.addAll(List.of(geometries));
-    }
-    Geometries(BoundingBox boundingBox, Geometries left, Geometries right, List<Intersectable> geometries, Intersectable intersectable){
+    Geometries(BoundingBox boundingBox, Geometries left, Geometries right, List<Intersectable> geometries, Intersectable intersectable) {
         items = geometries;
         this.box = boundingBox;
         this.left = left;
         this.right = right;
         this.intersectable = intersectable;
-    }
-
-    public boolean isLeaf() {
-        return left == null && right == null;
     }
 
     public static Geometries buildBVH(Geometries geometries) {
@@ -56,6 +44,7 @@ public class Geometries extends Intersectable {
         }
         return recursiveBuildBVH(geometries, 0, geometries.items.size() - 1);
     }
+
     private static Geometries recursiveBuildBVH(Geometries geometries, int start, int end) {
         if (start == end) {
             // Create a leaf node
@@ -71,7 +60,7 @@ public class Geometries extends Intersectable {
         // Sort geometries based on the longest axis
         geometries.items.sort(Comparator.comparingDouble(a -> getCentroid(a, longestAxis)));
 
-        int mid = (start + end)/ 2;
+        int mid = (start + end) / 2;
 
         // Recursively build left and right subtrees
         Geometries left = recursiveBuildBVH(new Geometries(geometries.items.subList(0, mid - start + 1)), start, mid);
@@ -79,12 +68,12 @@ public class Geometries extends Intersectable {
 
         // Calculate the bounding box for the current node
         BoundingBox boundingBox = calculateBoundingBox(geometries.items, end - start);
-        double minx = boundingBox.minimums.getCoordinate().getX() -0.01;
-        double miny = boundingBox.minimums.getCoordinate().getY()-0.01;
-        double minz = boundingBox.minimums.getCoordinate().getZ()-0.01;
-        double maxx = boundingBox.maximums.getCoordinate().getX()+0.01;
-        double maxy = boundingBox.maximums.getCoordinate().getY()+0.01;
-        double maxz = boundingBox.maximums.getCoordinate().getZ()+0.01;
+        double minx = boundingBox.minimums.getCoordinate().getX() - 0.01;
+        double miny = boundingBox.minimums.getCoordinate().getY() - 0.01;
+        double minz = boundingBox.minimums.getCoordinate().getZ() - 0.01;
+        double maxx = boundingBox.maximums.getCoordinate().getX() + 0.01;
+        double maxy = boundingBox.maximums.getCoordinate().getY() + 0.01;
+        double maxz = boundingBox.maximums.getCoordinate().getZ() + 0.01;
 
         // Create an internal node
         Geometries myGeo = new Geometries(boundingBox, left, right, geometries.items, new Polygon(
@@ -154,6 +143,21 @@ public class Geometries extends Intersectable {
         }
         return new BoundingBox(new Point(minX, minY, minZ), new Point(maxX, maxY, maxZ));
     }
+
+    public List<Intersectable> getItems() {
+        return items;
+    }
+
+    public void add(Intersectable... geometries) {
+        if (bvhIsOn)
+            createBoundingBox();
+        items.addAll(List.of(geometries));
+    }
+
+    public boolean isLeaf() {
+        return left == null && right == null;
+    }
+
     /**
      * implementation of findGeoIntersectionsHelper from Intersectable
      *
@@ -180,7 +184,7 @@ public class Geometries extends Intersectable {
     /**
      * Finds the intersection points of the ray with the surface of the object
      *
-     * @param ray The ray to intersect with the GeoPoint.
+     * @param ray         The ray to intersect with the GeoPoint.
      * @param maxDistance The maximum distance from the source of the ray to intersect with.
      * @return A list of GeoPoints that are the intersections of the ray with the object.
      */
@@ -225,7 +229,7 @@ public class Geometries extends Intersectable {
     }
 
     @Override
-        public List<GeoPoint> findGeoIntersections(Ray ray) {
+    public List<GeoPoint> findGeoIntersections(Ray ray) {
         if (box == null)
             return findGeoIntersectionsHelper(ray);
         List<GeoPoint> geometries1 = new LinkedList<>();
@@ -240,7 +244,7 @@ public class Geometries extends Intersectable {
 
                 if (leftIntersect != null)
                     geometries1.addAll(leftIntersect);
-                if(rightIntersect != null)
+                if (rightIntersect != null)
                     geometries1.addAll(rightIntersect);
             }
         }

@@ -42,10 +42,10 @@ public class Tube extends RadialGeometry {
     }
 
     /**
-
-     Finds the intersection points of the given ray with the geometry.
-     @param ray The ray to intersect with the geometry.
-     @return A list of {@link GeoPoint} objects representing the intersection points, or null if there are no intersections.
+     * Finds the intersection points of the given ray with the geometry.
+     *
+     * @param ray The ray to intersect with the geometry.
+     * @return A list of {@link GeoPoint} objects representing the intersection points, or null if there are no intersections.
      */
     @Override
     protected List<GeoPoint> findGeoIntersectionsHelper(Ray ray) {
@@ -87,10 +87,10 @@ public class Tube extends RadialGeometry {
             double deltaPVa = deltaP.dotProduct(va); //(delP,va)va)
             if (!isZero(deltaPVa)) deltaPMinusDeltaPVaVa = deltaP.subtract(va.scale(deltaPVa)); //(delP-(delP,va)va)
             b = 2 * (vecA.dotProduct(deltaPMinusDeltaPVaVa)); //2(v-(v,va)va,delP-(delP,va)va)
-            c = deltaPMinusDeltaPVaVa.lengthSquared() - this.radius*this.radius; //(delP-(delP,va)va)^2 - r^2
+            c = deltaPMinusDeltaPVaVa.lengthSquared() - this.radius * this.radius; //(delP-(delP,va)va)^2 - r^2
         } catch (IllegalArgumentException e) {
             b = 0; //if delP = 0, or (delP-(delP,va)va = (0, 0, 0)
-            c = -1 * this.radius*this.radius;
+            c = -1 * this.radius * this.radius;
         }
 
         //Step 3 - solving the quadratic equation: ax^2 + bx + c = 0

@@ -9,7 +9,7 @@ import primitives.Vector;
  *
  * @author Israel Jacob & Avraham Meiri
  */
-public class PointLight extends Light implements LightSource{
+public class PointLight extends Light implements LightSource {
 
     private final Point position;
 
@@ -74,7 +74,7 @@ public class PointLight extends Light implements LightSource{
         double distanceSquared = point.distanceSquared(position);
 
         // Calculating the intensity of the light at a given point.
-        double factor = (kC + kL *distance + kQ *distanceSquared);
+        double factor = (kC + kL * distance + kQ * distanceSquared);
         Color Ic = getIntensity();
 
         // Reducing the intensity of the light by the factor.

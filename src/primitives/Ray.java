@@ -1,6 +1,9 @@
 package primitives;
-import java.util.List;
+
 import geometries.Intersectable.GeoPoint;
+
+import java.util.List;
+
 import static primitives.Util.isZero;
 
 public class Ray {
@@ -21,8 +24,8 @@ public class Ray {
     /**
      * Constructor for ray deflected by epsilon
      *
-     * @param p0 origin
-     * @param n normal vector
+     * @param p0  origin
+     * @param n   normal vector
      * @param dir direction
      */
     public Ray(Point p0, Vector n, Vector dir) {

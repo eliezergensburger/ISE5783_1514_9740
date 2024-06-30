@@ -5,7 +5,8 @@ import org.junit.jupiter.api.Test;
 import java.util.LinkedList;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 
 class RayTest {
@@ -13,8 +14,7 @@ class RayTest {
     List<Point> list;
 
     @Test
-    void testFindClosestPoint()
-    {
+    void testFindClosestPoint() {
         // ============ Equivalence Partitions Tests ==============
 
         // TC01: Point in the middle of the list is the closest

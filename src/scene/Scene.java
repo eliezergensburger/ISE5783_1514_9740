@@ -1,7 +1,7 @@
 package scene;
 
-import lighting.AmbientLight;
 import geometries.Geometries;
+import lighting.AmbientLight;
 import lighting.LightSource;
 import primitives.Color;
 
@@ -40,10 +40,10 @@ public class Scene {
     public static class SceneBuilder {
 
         private final String name;
+        public List<LightSource> lights = new LinkedList<>();
         private Color background = Color.BLACK;
         private AmbientLight ambientLight = new AmbientLight();
         private Geometries geometries = new Geometries();
-        public List<LightSource> lights = new LinkedList<>();
 
         /**
          * This is the builder

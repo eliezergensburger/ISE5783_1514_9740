@@ -9,7 +9,7 @@ import primitives.Vector;
  *
  * @author Israel Jacob & Avraham Meiri
  */
-public class SpotLight extends PointLight{
+public class SpotLight extends PointLight {
     private final Vector direction;
     private double narrowBeam = 0d;
 
@@ -17,12 +17,21 @@ public class SpotLight extends PointLight{
      * Constructor
      *
      * @param intensity The intensity of the SpotLight
-     * @param position The position of the SpotLight
+     * @param position  The position of the SpotLight
      * @param direction The direction of the SpotLight
      */
     public SpotLight(Color intensity, Point position, Vector direction) {
         super(intensity, position);
         this.direction = direction.normalize();
+    }
+
+    /**
+     * Getter for the narrowBeam field.
+     *
+     * @return The narrowBeam variable is being returned.
+     */
+    public double getNarrowBeam() {
+        return this.narrowBeam;
     }
 
     /**
@@ -34,15 +43,6 @@ public class SpotLight extends PointLight{
     public SpotLight setNarrowBeam(double narrowBeam) {
         this.narrowBeam = narrowBeam;
         return this;
-    }
-
-    /**
-     * Getter for the narrowBeam field.
-     *
-     * @return The narrowBeam variable is being returned.
-     */
-    public double getNarrowBeam(){
-        return this.narrowBeam;
     }
 
     /**
@@ -58,7 +58,7 @@ public class SpotLight extends PointLight{
         double lv = getL(point).dotProduct(direction);
         double factor = Math.max(0, lv);
         // if narrowBeam field has changed, calculate the narrow beam of the light.
-        if(narrowBeam != 0)
+        if (narrowBeam != 0)
             // A way to make the light more focused.
             factor = Math.pow(factor, narrowBeam);
 

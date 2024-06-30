@@ -8,7 +8,7 @@ import java.util.List;
 
 import static primitives.Util.alignZero;
 
-public class Triangle extends Polygon{
+public class Triangle extends Polygon {
 
     /**
      * Constructor: Initializes a new instance of the Triangle class.
@@ -52,7 +52,7 @@ public class Triangle extends Polygon{
         // if all the points have the same sign(+/-),
         // all the points are inside the triangle
         if (a < 0 && b < 0 && c < 0 || a > 0 && b > 0 && c > 0)
-            return List.of(new GeoPoint(this,result.get(0).point));
+            return List.of(new GeoPoint(this, result.get(0).point));
 
         return null;
     }
@@ -60,7 +60,7 @@ public class Triangle extends Polygon{
     /**
      * Finds the intersection points of the ray with the surface of the object
      *
-     * @param ray The ray to intersect with the GeoPoint.
+     * @param ray         The ray to intersect with the GeoPoint.
      * @param maxDistance The maximum distance from the source of the ray to intersect with.
      * @return A list of GeoPoints that are the intersections of the ray with the object.
      */
@@ -93,7 +93,7 @@ public class Triangle extends Polygon{
         // if all the points have the same sign(+/-),
         // all the points are inside the triangle
         if (a < 0 && b < 0 && c < 0 || a > 0 && b > 0 && c > 0)
-            return List.of(new GeoPoint(this,result.get(0).point));
+            return List.of(new GeoPoint(this, result.get(0).point));
 
         return null;
     }

@@ -27,7 +27,7 @@ class VectorTests {
     @Test
     void testAdd() {
         assertThrows(IllegalArgumentException.class,
-                () -> new Vector(-1,-1,-1).add(new Vector(1,1,1)),
+                () -> new Vector(-1, -1, -1).add(new Vector(1, 1, 1)),
                 "ERROR: Vector + -itself does not throw an exception");
         Vector v1 = new Vector(1.0, 2.0, 3.0);
         Vector v2 = new Vector(4.0, 5.0, 6.0);
@@ -41,7 +41,7 @@ class VectorTests {
     @Test
     void testScale() {
         assertThrows(IllegalArgumentException.class,
-                () -> new Vector(-1,-1,-1).scale(0),
+                () -> new Vector(-1, -1, -1).scale(0),
                 "ERROR: Vector + -itself does not throw an exception");
         Vector v1 = new Vector(1.0, 2.0, 3.0);
         Vector v2 = v1.scale(2.0);

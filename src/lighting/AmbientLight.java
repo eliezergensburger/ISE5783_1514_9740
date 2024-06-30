@@ -19,6 +19,7 @@ public class AmbientLight extends Light {
 
     /**
      * Constructor
+     *
      * @param Ia Light illumination
      * @param Ka Light factor
      */

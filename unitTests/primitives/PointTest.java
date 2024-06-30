@@ -1,6 +1,7 @@
 package primitives;
 
 import org.junit.jupiter.api.Test;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
@@ -38,7 +39,7 @@ class PointTest {
     @Test
     void testSubtract() {
         assertThrows(IllegalArgumentException.class,
-                () -> new Point(1,1,1).subtract(new Point(1,1,1)),
+                () -> new Point(1, 1, 1).subtract(new Point(1, 1, 1)),
                 "ERROR: Vector - itself does not throw an exception");
         Point p1 = new Point(1.0, 2.0, 3.0);
         Point p2 = new Point(2.0, 3.0, 4.0);

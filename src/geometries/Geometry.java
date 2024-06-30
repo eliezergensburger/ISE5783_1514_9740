@@ -7,13 +7,12 @@ import primitives.Vector;
 
 
 /**
-
- The Geometry class is an abstract class representing a geometric object in a 3D space.
- It extends the Intersectable class and provides methods for setting and retrieving
- properties such as emission and material, as well as calculating the normal vector
- to the surface of the geometry at a given point.
-
- @author Israel Jacob & Avraham Meiri
+ * The Geometry class is an abstract class representing a geometric object in a 3D space.
+ * It extends the Intersectable class and provides methods for setting and retrieving
+ * properties such as emission and material, as well as calculating the normal vector
+ * to the surface of the geometry at a given point.
+ *
+ * @author Israel Jacob & Avraham Meiri
  */
 public abstract class Geometry extends Intersectable {
 

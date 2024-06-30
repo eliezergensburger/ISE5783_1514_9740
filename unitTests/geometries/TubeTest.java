@@ -5,7 +5,8 @@ import primitives.Point;
 import primitives.Ray;
 import primitives.Vector;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class TubeTest {
     /**
@@ -13,7 +14,7 @@ class TubeTest {
      */
     @Test
     void testGetNormal() {
-        Tube tu = new Tube(1 ,new Ray(new Point(0, 0, 0), new Vector(1, 0, 0)));
+        Tube tu = new Tube(1, new Ray(new Point(0, 0, 0), new Vector(1, 0, 0)));
 
         // ============ Equivalence Partitions Tests ==============
         // TC01: tests for calculation of normal to the tu

@@ -7,11 +7,11 @@ package primitives;
  */
 public class Material {
     public Double3 kD = Double3.ZERO; // diffuse
-    public  Double3 kS = Double3.ZERO; // specular
+    public Double3 kS = Double3.ZERO; // specular
 
-    public  Double3 kT = Double3.ZERO; // Transparency
+    public Double3 kT = Double3.ZERO; // Transparency
 
-    public  Double3 kR = Double3.ZERO; // Reflection
+    public Double3 kR = Double3.ZERO; // Reflection
 
     public int nShininess = 0; // shininess
 
@@ -84,7 +84,7 @@ public class Material {
     /**
      * Setter for the reflection coefficient field.
      *
-         * @param Kr The reflection coefficient of the material.
+     * @param Kr The reflection coefficient of the material.
      * @return The material itself.
      */
     public Material setKr(Double3 Kr) {
@@ -102,6 +102,7 @@ public class Material {
         this.kR = new Double3(Kr);
         return this;
     }
+
     /**
      * Setter for the nShininess field.
      *

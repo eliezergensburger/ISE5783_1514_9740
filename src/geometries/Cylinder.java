@@ -4,24 +4,25 @@ import primitives.Point;
 import primitives.Ray;
 import primitives.Vector;
 
-import static primitives.Util.alignZero;
-
-public class Cylinder extends Tube{
+public class Cylinder extends Tube {
 
     final private double height; // The height of the cylinder
+
+    public Cylinder(Ray axisRay, double radius, double height) {
+        super(radius, axisRay);
+        this.height = height;
+    }
 
     public double getHeight() {
         return this.height;
     }
-    public Cylinder(Ray axisRay, double radius, double height ) {
-        super(radius, axisRay);
-        this.height = height;
-    }
+
     @Override
     public boolean equals(Object obj) {//checks if equals
         return (obj instanceof Cylinder) &&
-                super.equals(obj)&&  this.height == ((Cylinder) obj).height;
+                super.equals(obj) && this.height == ((Cylinder) obj).height;
     }
+
     @Override
     public Vector getNormal(Point point) {
 
@@ -35,8 +36,7 @@ public class Cylinder extends Tube{
         //direction vector 𝑣 or opposite to it (−𝑣) so we check it
         if (point.equals(centerOfOneSide)) {
             return cylinderCenterVector.scale(-1);
-        }
-        else if (point.equals(centerOfSecondSide)){
+        } else if (point.equals(centerOfSecondSide)) {
             return cylinderCenterVector;
         }
 

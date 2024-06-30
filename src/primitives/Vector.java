@@ -1,4 +1,5 @@
 package primitives;
+
 import static java.lang.Math.sqrt;
 
 public class Vector extends Point {
@@ -79,9 +80,9 @@ public class Vector extends Point {
      * @return A double value representing the dot product of the two vectors.
      */
     public double dotProduct(Vector v) {
-        return this.coordinate.d1*v.coordinate.d1 +
-                this.coordinate.d2*v.coordinate.d2 +
-                this.coordinate.d3*v.coordinate.d3;
+        return this.coordinate.d1 * v.coordinate.d1 +
+                this.coordinate.d2 * v.coordinate.d2 +
+                this.coordinate.d3 * v.coordinate.d3;
     }
 
     /**
@@ -91,10 +92,10 @@ public class Vector extends Point {
      * @return A new Vector object representing the cross product of the two vectors.
      */
     public Vector crossProduct(Vector v) {
-        double d1 =  this.coordinate.d2*v.coordinate.d3 - this.coordinate.d3*v.coordinate.d2;
-        double d2 =  this.coordinate.d3*v.coordinate.d1 - this.coordinate.d1*v.coordinate.d3;
-        double d3 =  this.coordinate.d1*v.coordinate.d2 - this.coordinate.d2*v.coordinate.d1;
-        return new Vector(d1,d2,d3);
+        double d1 = this.coordinate.d2 * v.coordinate.d3 - this.coordinate.d3 * v.coordinate.d2;
+        double d2 = this.coordinate.d3 * v.coordinate.d1 - this.coordinate.d1 * v.coordinate.d3;
+        double d3 = this.coordinate.d1 * v.coordinate.d2 - this.coordinate.d2 * v.coordinate.d1;
+        return new Vector(d1, d2, d3);
     }
 
     /**
@@ -122,6 +123,6 @@ public class Vector extends Point {
      */
     public Vector normalize() {
         double length = this.length();
-        return new Vector(this.coordinate.d1/length, this.coordinate.d2/length, this.coordinate.d3/length);
+        return new Vector(this.coordinate.d1 / length, this.coordinate.d2 / length, this.coordinate.d3 / length);
     }
 }

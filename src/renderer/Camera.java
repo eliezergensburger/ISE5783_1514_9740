@@ -24,29 +24,24 @@ import static primitives.Util.isZero;
  */
 public class Camera {
 
-    private final Vector vRight;
-    private final Vector vTo;
-    private final Vector vUp;
-    private final Point p0;
-
-    private double distance;
-    private int width;
-    private int height;
-
-    private ImageWriter imageWriter;
-    private RayTracerBase rayTracer;
-
-
-    private double depthOfField;
-    private double aperture;
-    private PixelManager pixelManager;
-    int n;
-    private boolean splitToThreads = false;
-
     private static final String RESOURCE_ERROR = "Renderer resource not set";
     private static final String RENDER_CLASS = "Render";
     private static final String IMAGE_WRITER_COMPONENT = "Image writer";
     private static final String RAY_TRACER_COMPONENT = "Ray tracer";
+    private final Vector vRight;
+    private final Vector vTo;
+    private final Vector vUp;
+    private final Point p0;
+    int n;
+    private double distance;
+    private int width;
+    private int height;
+    private ImageWriter imageWriter;
+    private RayTracerBase rayTracer;
+    private double depthOfField;
+    private double aperture;
+    private PixelManager pixelManager;
+    private boolean splitToThreads = false;
 
     /**
      * This is the constructor of the camera class. It takes 3 vectors as parameters and checks if they are orthogonal.
@@ -175,7 +170,7 @@ public class Camera {
      * @param point The point for which to calculate the dof.
      * @return The dof value for the given point.
      */
-    public double getDofByPoint(Point point){
+    public double getDofByPoint(Point point) {
         Point vpCenterPoint = p0.add(vTo.scale(distance));
         Vector v = point.subtract(p0);
         Point p2 = vpCenterPoint.add(vUp);
@@ -225,13 +220,13 @@ public class Camera {
     /**
      * Casts a ray for a specific pixel in the image and writes the resulting color to the image.
      *
-     * @param nX   The x-coordinate of the pixel in the image.
-     * @param nY   The y-coordinate of the pixel in the image.
-     * @param col  The column index of the pixel in the image.
-     * @param row  The row index of the pixel in the image.
+     * @param nX  The x-coordinate of the pixel in the image.
+     * @param nY  The y-coordinate of the pixel in the image.
+     * @param col The column index of the pixel in the image.
+     * @param row The row index of the pixel in the image.
      */
-    private void castRay(int nX, int nY, int col, int row){
-        imageWriter.writePixel(col, row, rayTracer.traceRay(constructRay(nX,  nY,  col,  row)));
+    private void castRay(int nX, int nY, int col, int row) {
+        imageWriter.writePixel(col, row, rayTracer.traceRay(constructRay(nX, nY, col, row)));
         pixelManager.pixelDone();
     }
 
@@ -253,10 +248,9 @@ public class Camera {
 
 
         if (!splitToThreads) {
-            for (;(pixel = pixelManager.nextPixel())!= null; pixelManager.pixelDone())
-                    castRay(nX, nY, pixel.col(), pixel.row());
-        }
-        else {
+            for (; (pixel = pixelManager.nextPixel()) != null; pixelManager.pixelDone())
+                castRay(nX, nY, pixel.col(), pixel.row());
+        } else {
             //rendering image with using of threads
             IntStream.range(0, nY).parallel().forEach(row ->
                     IntStream.range(0, nX).parallel().forEach(col -> castRay(nX, nY, col, row)));
@@ -280,17 +274,16 @@ public class Camera {
 
 
         if (!splitToThreads) {
-            for (;(pixel = pixelManager.nextPixel())!= null; pixelManager.pixelDone()){
-                    Ray myRay = constructRay(nX, nY, pixel.col(), pixel.row());
-                    List<Ray> myRays = constructRaysGridFromCamera(n, myRay);
-                    Color myColor = new Color(0, 0, 0);
-                    for (Ray ray : myRays) { // we pass in the list myRays and for each ray we found his color
-                        myColor = myColor.add(rayTracer.traceRay(ray)); // we add the color of each ray to myColor
-                    }
-                    imageWriter.writePixel(pixel.col(), pixel.row(), myColor.reduce(myRays.size())); // we reduce myColor with the size of my list (number of rays)
+            for (; (pixel = pixelManager.nextPixel()) != null; pixelManager.pixelDone()) {
+                Ray myRay = constructRay(nX, nY, pixel.col(), pixel.row());
+                List<Ray> myRays = constructRaysGridFromCamera(n, myRay);
+                Color myColor = new Color(0, 0, 0);
+                for (Ray ray : myRays) { // we pass in the list myRays and for each ray we found his color
+                    myColor = myColor.add(rayTracer.traceRay(ray)); // we add the color of each ray to myColor
+                }
+                imageWriter.writePixel(pixel.col(), pixel.row(), myColor.reduce(myRays.size())); // we reduce myColor with the size of my list (number of rays)
             }
-        }
-        else {
+        } else {
             //rendering image with using of threads
             IntStream.range(0, nY).parallel().forEach(row ->
                     IntStream.range(0, nX).parallel().forEach(col -> {
@@ -309,8 +302,8 @@ public class Camera {
 
     /**
      * @param ray the ray from the center of the camera
-     * @param n the number of squares in height and width (of the grid)
-     *          this function construct a grid around the circle of the camera
+     * @param n   the number of squares in height and width (of the grid)
+     *            this function construct a grid around the circle of the camera
      * @return the list of all the rays from each pixel in the camera
      */
     public List<Ray> constructRaysGridFromCamera(int n, Ray ray) { // we construct a square around the circle of the camera, the size n=2*radius(aperture)
@@ -342,12 +335,11 @@ public class Camera {
     }
 
     /**
-     *
-     * @param nX grid's width
-     * @param nY grid's height
-     * @param j y emplacement of the point
-     * @param i x emplacement of the point
-     * @param pixelSize size of the pixel
+     * @param nX         grid's width
+     * @param nY         grid's height
+     * @param j          y emplacement of the point
+     * @param i          x emplacement of the point
+     * @param pixelSize  size of the pixel
      * @param focusPoint point on the focus plane
      * @return a ray from the pixel to the focus point
      */

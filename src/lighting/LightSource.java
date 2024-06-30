@@ -6,10 +6,9 @@ import primitives.Vector;
 
 
 /**
-
- The LightSource interface represents a source of light in a lighting system.
- It provides methods to retrieve the intensity of the light at a specific point
- and the direction of the light from that point.
+ * The LightSource interface represents a source of light in a lighting system.
+ * It provides methods to retrieve the intensity of the light at a specific point
+ * and the direction of the light from that point.
  */
 public interface LightSource {
     /**

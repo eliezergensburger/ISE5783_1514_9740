@@ -1,13 +1,17 @@
 package renderer;
 
+import geometries.Intersectable;
+import geometries.Plane;
+import geometries.Sphere;
+import geometries.Triangle;
 import org.junit.jupiter.api.Test;
-import primitives.*;
-import geometries.*;
+import primitives.Point;
 import primitives.Vector;
 
-import java.util.*;
+import java.util.LinkedList;
+import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * @author Dan Zilberstein
@@ -15,13 +19,14 @@ import static org.junit.jupiter.api.Assertions.*;
 class CameraIntegrationsTest {
 
     static final Point ZERO_POINT = new Point(0, 0, 0);
+
     /**
      * Test helper function to count the intersections and compare with expected value
      *
-     * @author Dan Zilberstein
      * @param cam      camera for the test
      * @param geo      3D body to test the integration of the camera with
      * @param expected amount of intersections
+     * @author Dan Zilberstein
      */
     private void assertCountIntersections(Camera cam, Intersectable geo, int expected) {
         int count = 0;
@@ -30,8 +35,8 @@ class CameraIntegrationsTest {
 
         cam.setVPSize(3, 3);
         cam.setVPDistance(1);
-        int nX =3;
-        int nY =3;
+        int nX = 3;
+        int nY = 3;
         //view plane 3X3 (WxH 3X3 & nx,ny =3 => Rx,Ry =1)
         for (int i = 0; i < nY; ++i) {
             for (int j = 0; j < nX; ++j) {
