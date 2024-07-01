@@ -28,7 +28,7 @@ public class ImproveRunTimeTests {
                 .renderImageWithDepthOfField()
                 .writeToImage();
         long endTime1 = System.currentTimeMillis();
-        System.out.println("without multithreading took " + (endTime1 - startTime1) + " mile seconds\n");
+        System.out.println("without multithreading took " + (endTime1 - startTime1) + " milliseconds\n");
 
         Camera camera2 = myTest.createCamera().setMultithreading(true);
 
@@ -47,7 +47,7 @@ public class ImproveRunTimeTests {
                 .renderImageWithDepthOfField()
                 .writeToImage();
         long endTime = System.currentTimeMillis();
-        System.out.println("with multithreading took " + (endTime - startTime2) + " mile seconds\n");
+        System.out.println("with multithreading took " + (endTime - startTime2) + " milliseconds\n");
     }
 
     @Test
@@ -69,7 +69,7 @@ public class ImproveRunTimeTests {
                 .renderImageWithDepthOfField()
                 .writeToImage();
         long endTime1 = System.currentTimeMillis();
-        System.out.println("without BVH took " + (endTime1 - startTime1) + " mile seconds\n");
+        System.out.println("without BVH took " + (endTime1 - startTime1) + " milliseconds\n");
 
 
         for (Intersectable intersectable : myTest.scene.geometries.getItems()) {
@@ -93,7 +93,7 @@ public class ImproveRunTimeTests {
                 .renderImageWithDepthOfField()
                 .writeToImage();
         long endTime = System.currentTimeMillis();
-        System.out.println("with BVH took " + (endTime - startTime2) + " mile seconds\n");
+        System.out.println("with BVH took " + (endTime - startTime2) + " milliseconds\n");
     }
 
     @Test
@@ -115,7 +115,7 @@ public class ImproveRunTimeTests {
                 .renderImageWithDepthOfField()
                 .writeToImage();
         long endTime1 = System.currentTimeMillis();
-        System.out.println("without BVH and multithreading took " + (endTime1 - startTime1) + " mile seconds\n");
+        System.out.println("without BVH and multithreading took " + (endTime1 - startTime1) + " milliseconds\n");
 
         for (Intersectable intersectable : myTest.scene.geometries.getItems()) {
             intersectable.setBvhIsOn(true);
@@ -138,7 +138,7 @@ public class ImproveRunTimeTests {
                 .renderImageWithDepthOfField()
                 .writeToImage();
         long endTime = System.currentTimeMillis();
-        System.out.println("with BVH and multithreading took " + (endTime - startTime2) + " mile seconds\n");
+        System.out.println("with BVH and multithreading took " + (endTime - startTime2) + " milliseconds\n");
     }
 }
 

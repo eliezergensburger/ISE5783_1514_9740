@@ -13,7 +13,7 @@ public class Material {
 
     public Double3 kR = Double3.ZERO; // Reflection
 
-    public int nShininess = 0; // shininess
+    public int nShininess = 1; // shininess
 
     /**
      * Setter for the Kd field.

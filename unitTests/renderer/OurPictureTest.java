@@ -28,17 +28,6 @@ public class OurPictureTest {
     private final Intersectable ball1 = new Sphere(12.5, new Point(0, 0, -50))
             .setEmission(new Color(BLUE))
             .setMaterial(material.setKt(0.5));
-    private final Scene scene = new Scene.SceneBuilder("Our picture").setBackground(new Color(GRAY))
-            .setAmbientLight(new AmbientLight(new Color(BLACK), new Double3(0.15)))
-            .setLights(List.of(new SpotLight(new Color(PINK), new Point(100, 100, 75), new Vector(-1, -1, -1)),
-                    //new DirectionalLight(new Color(WHITE), new Vector(0,1,0))
-                    //new PointLight(new Color(234,63,247), new Point(0,0,-95)),
-                    new SpotLight(new Color(115, 251, 253), new Point(0, 0, 0), new Vector(0, 0, -1))
-            ))
-            .setGeometries(new Geometries(List.of(mirror, table1, ball1, ball2, leg1_1, leg1_2, leg1_3, leg1_4, leg2_1, leg2_2, leg2_3, leg2_4, leg3_1, leg3_2, leg3_3, leg3_4, leg4_1, leg4_2, leg4_3, leg4_4))).build();
-    private final Camera camera = new Camera(new Point(400, -1100, 250), new Vector(-0.4, 1, -0.3), new Vector(-0.1, 0.26, 1))
-            .setVPSize(200, 200).setVPDistance(1000)
-            .setRayTracer(new RayTracerBasic(scene));
     private final Intersectable ball2 = new Sphere(18d, new Point(0, 0, -85))
             .setEmission(new Color(234, 63, 247))
             .setMaterial(new Material().setKd(0.4).setKs(0.3).setShininess(100).setKt(0.4));
@@ -74,6 +63,17 @@ public class OurPictureTest {
             .setEmission(new Color(RED));
     private final Intersectable leg4_4 = new Polygon(new Point(20, -16, -62.5), new Point(20, -20, -62.5), new Point(20, -20, -102.5), new Point(20, -16, -102.5))
             .setEmission(new Color(RED));
+    private final Scene scene = new Scene.SceneBuilder("Our picture").setBackground(new Color(GRAY))
+            .setAmbientLight(new AmbientLight(new Color(BLACK), new Double3(0.15)))
+            .setLights(List.of(new SpotLight(new Color(PINK), new Point(100, 100, 75), new Vector(-1, -1, -1)),
+                    //new DirectionalLight(new Color(WHITE), new Vector(0,1,0))
+                    //new PointLight(new Color(234,63,247), new Point(0,0,-95)),
+                    new SpotLight(new Color(115, 251, 253), new Point(0, 0, 0), new Vector(0, 0, -1))
+            ))
+            .setGeometries(new Geometries(List.of(mirror, table1, ball1, ball2, leg1_1, leg1_2, leg1_3, leg1_4, leg2_1, leg2_2, leg2_3, leg2_4, leg3_1, leg3_2, leg3_3, leg3_4, leg4_1, leg4_2, leg4_3, leg4_4))).build();
+    private final Camera camera = new Camera(new Point(400, -1100, 250), new Vector(-0.4, 1, -0.3), new Vector(-0.1, 0.26, 1))
+            .setVPSize(200, 200).setVPDistance(1000)
+            .setRayTracer(new RayTracerBasic(scene));
 
     @Test
     public void ourTest() {
